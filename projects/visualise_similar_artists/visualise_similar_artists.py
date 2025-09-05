@@ -26,7 +26,6 @@ if module_path not in sys.path:
     sys.path.append(module_path)
 
 # %% IMPORTS
-# import requests
 from time import sleep
 
 from adjustText import adjust_text
