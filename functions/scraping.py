@@ -5,7 +5,7 @@
 
 # %% IMPORTS
 import requests
-from dbfuncs import db_cache
+from .dbfuncs import db_cache
 from time import sleep
 
 # %% CONFIGS
@@ -15,7 +15,7 @@ LASTFM_ROOT = "https://ws.audioscrobbler.com/2.0/"
 # %% FUNCTIONS
 @db_cache
 def fetch(url: str, backoff: float = 1.5) -> requests.Response:
-    print(f"No cache, fetching {url}...")
+    # print(f"No cache, fetching {url}...")
     # Don't hammer the server. 1 request per second is a safe assumption
     sleep(backoff)
     return requests.get(url, timeout=30)

@@ -4,6 +4,11 @@
 # TODO: Basic typing
 # TODO: Add sleeps to avoid hammering the server
 
+# %% SET PATHS
+import os
+import sys
+
+    
 # %% IMPORTS
 import base64
 from collections.abc import Callable
@@ -12,9 +17,9 @@ import json
 import sqlite3
 from typing import Any, Optional
 import xml.etree.ElementTree as ET
-from time import sleep
 import requests
 
+from config import DB_PATH
 
 # %% FUNCTIONS
 def _detect_format(content_type: str | None) -> str:
@@ -37,7 +42,7 @@ def _serialize_result(result: Any, content_type: str | None, encoding: str | Non
     # If user returned a Response, pull from it
     if isinstance(result, requests.Response):
         ct = result.headers.get("Content-Type", content_type)
-        enc = result.encoding or encoding
+        enc = result.encoding or encoding  # ! encoding is not used
         fmt = _detect_format(ct)
         if fmt == "bytes":
             body_str = base64.b64encode(result.content).decode("ascii")
@@ -95,7 +100,7 @@ def db_cache(func: Callable) -> Callable:
         fname = func.__name__
 
         if not force_refresh:
-            conn = sqlite3.connect("../data/databases/requests_cache.db")
+            conn = sqlite3.connect(DB_PATH)
             cursor = conn.cursor()
             cursor.execute(
                 "SELECT body, format, content_type, encoding, status_code, headers FROM cache WHERE request=?",
@@ -129,7 +134,7 @@ def db_cache(func: Callable) -> Callable:
         body, fmt = _serialize_result(result, content_type, encoding)
 
         # Upsert into cache            
-        conn = sqlite3.connect("../data/databases/requests_cache.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT OR REPLACE INTO cache
