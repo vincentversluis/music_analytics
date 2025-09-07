@@ -25,6 +25,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent  # adjust as needed
 sys.path.append(str(PROJECT_ROOT))
 
 from functions.scraping import get_lastfm_listener_count, get_similar_artists
+
 # from time import sleep
 from adjustText import adjust_text
 from matplotlib import ticker
@@ -56,9 +57,7 @@ artist_listener_count = get_lastfm_listener_count(
 )
 
 # Get listener count for each similar artist
-for artist in tqdm(
-    similar_artists, desc="Getting listener counts"
-):
+for artist in tqdm(similar_artists, desc="Getting listener counts"):
     artist["listener_count"] = int(
         get_lastfm_listener_count(artist["name"], lastfm_api_key=lastfm_api_key)
     )

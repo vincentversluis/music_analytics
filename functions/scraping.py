@@ -12,6 +12,7 @@ from time import sleep
 MB_ROOT = "https://musicbrainz.org/ws/2/"
 LASTFM_ROOT = "https://ws.audioscrobbler.com/2.0/"
 
+
 # %% FUNCTIONS
 @db_cache
 def fetch(url: str, backoff: float = 1.5) -> requests.Response:
@@ -20,11 +21,12 @@ def fetch(url: str, backoff: float = 1.5) -> requests.Response:
     sleep(backoff)
     return requests.get(url, timeout=30)
 
+
 def get_artist_info(artist_name: str, **kwargs) -> dict:
     q = f'{MB_ROOT}artist/?query=name:"{artist_name}"&fmt=json'
     resp = fetch(q, **kwargs)
     # resp = fetch(q)
-    
+
     # Get info for exact match or first result
     try:
         artist_info = [
@@ -38,9 +40,11 @@ def get_artist_info(artist_name: str, **kwargs) -> dict:
     # Don't hammer the server - MusicBrainz throttles at 1 request per second
     return artist_info
 
+
 def get_artist_mbid(artist_name: str, **kwargs):
     artist_info = get_artist_info(artist_name, **kwargs)
     return artist_info["id"]
+
 
 def get_similar_artists(
     artist_name: str, lastfm_api_key: str, limit: int = 100, **kwargs
@@ -60,7 +64,7 @@ def get_similar_artists(
             "url": artist.get("url"),
         }
         for artist in similar_artists
-    ]    
+    ]
     return similar_artists
 
 

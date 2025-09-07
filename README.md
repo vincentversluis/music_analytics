@@ -12,6 +12,11 @@ cd music_analytics
 pip install -r requirements.txt
 ```
 
+This project uses the friendly-for-data-analysts VS Code Jupyter code cells extension, so use this repo in VS Code and install the extension.
+
+For dealing with requests, this repository uses a database to cache requests. To initialise the database, follow the instructions in [`data/databases/setup.py`](data/databases/setup.py). 
+
+
 ## Projects
 
 The projects are in the [`projects`](projects) folder.
