@@ -2,45 +2,92 @@
 # A collection of functions to get artist data from various sources
 
 # %% IMPORTS
+from time import sleep
+
 import requests
 
-# %% CONFIGS
+from .dbfuncs import db_cache
+
+# %% CONSTANTS
 MB_ROOT = "https://musicbrainz.org/ws/2/"
 LASTFM_ROOT = "https://ws.audioscrobbler.com/2.0/"
 
 
 # %% FUNCTIONS
-def get_artist(artist_name: str) -> dict:
-    q = f'{MB_ROOT}artist/?query=name:"{artist_name}"&fmt=json'
-    resp = requests.get(q)
-    resp.json()
+@db_cache
+def fetch(url: str, backoff: float = 1.5) -> requests.Response:
+    """Fetch a URL and return the response.
 
-    # Get info for exact match or first result
+    With db_cache, this will either retrieve
+    a cached response or fetch a new one and insert that into the database.
+
+    Args:
+        url (str): The url to request.
+        backoff (float, optional): The time to wait between requests. Defaults to 1.5.
+
+    Returns:
+        requests.Response: The response.
+    """
+    # Don't hammer the server. 1 request per second is a safe assumption
+    sleep(backoff)
+    return requests.get(url, timeout=30)
+
+
+def get_artist_info(artist_name: str, **kwargs) -> dict:
+    """Get artist info from MusicBrainz.
+
+    Args:
+        artist_name (str): The name of the artist to get info for.
+
+    Returns:
+        dict: The artist info.
+    """
+    q = f'{MB_ROOT}artist/?query=name:"{artist_name}"&fmt=json'
+    resp = fetch(q, **kwargs)
+
+    # Get info for exact match if present, or return first result (which should be the closest match)
     try:
         artist_info = [
-            artist for artist in resp.json()["artists"] if artist["name"] == artist_name
+            artist for artist in resp["artists"] if artist["name"] == artist_name
         ][0]
     except IndexError:
-        artist_info = resp.json()["artists"][0]
+        artist_info = resp["artists"][0]
         print(
             f"No artist found with exact name {artist_name}. Instead found artist with name {artist_info['name']}."
         )
-
     return artist_info
 
 
-def get_artist_mbid(artist_name: str):
-    artist_info = get_artist(artist_name)
+def get_artist_mbid(artist_name: str, **kwargs) -> str:
+    """Get the MBID for an artist from MusicBrainz.
+
+    Args:
+        artist_name (str): The artist name.
+
+    Returns:
+        str: The MBID of the artist.
+    """
+    artist_info = get_artist_info(artist_name, **kwargs)
     return artist_info["id"]
 
 
 def get_similar_artists(
-    artist_name: str, lastfm_api_key: str, limit: int = 100
+    artist_name: str, lastfm_api_key: str, limit: int = 100, **kwargs
 ) -> list:
+    """Get similar artist to an artist from Last.fm.
+
+    Args:
+        artist_name (str): The artist to get similar artists for.
+        lastfm_api_key (str): Your Last.fm API key.
+        limit (int, optional): The number of similar artists to get. Defaults to 100.
+
+    Returns:
+        list: The similar artists, along with their similarity and MBID.
+    """
     mbid = get_artist_mbid(artist_name)
     q = f"{LASTFM_ROOT}?method=artist.getsimilar&mbid={mbid}&api_key={lastfm_api_key}&limit={limit}&format=json"
-    resp = requests.get(q)
-    similar_artists = resp.json()["similarartists"]["artist"]
+    resp = fetch(q, **kwargs)
+    similar_artists = resp["similarartists"]["artist"]
 
     # Clean up a little bit - leave only needed keys and fix types
     similar_artists = [
@@ -55,9 +102,22 @@ def get_similar_artists(
     return similar_artists
 
 
-def get_lastfm_listener_count(artist_name: str, lastfm_api_key: str) -> int:
-    # Skip using mbid, it does not return reliable results for arist names like "Be'lakor"
+def get_lastfm_listener_count(artist_name: str, lastfm_api_key: str, **kwargs) -> int:
+    """Get the listener count for an artist from Last.fm.
+
+    This method explicitly uses the artist name,
+    not the MBID, as the artist name is more reliable for artists with punctuation in their name, such as
+    "Be'lakor".
+
+    Args:
+        artist_name (str): The artist name.
+        lastfm_api_key (str): Your Last.fm API key.
+
+    Returns:
+        int: The listener count of the artist.
+    """
     q = f"{LASTFM_ROOT}?method=artist.getinfo&artist={artist_name}&api_key={lastfm_api_key}&format=json"
-    resp = requests.get(q)
-    listener_count = int(resp.json()["artist"]["stats"]["listeners"])
+    resp = fetch(q, **kwargs)
+
+    listener_count = int(resp["artist"]["stats"]["listeners"])
     return listener_count
