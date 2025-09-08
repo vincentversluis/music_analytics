@@ -1,5 +1,16 @@
 # My own stuff
-*data*
+*pruts*
+
+# Credentials and keys and such
+*credentials*
+*key*
+
+# Ignore everything in /data except a couple of things
+/data/*
+!/data/databases/setup.py
+!/data/credentials/
+
+################################################################################
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
