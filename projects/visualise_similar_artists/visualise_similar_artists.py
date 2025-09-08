@@ -13,20 +13,16 @@
 # might want to adjust the size of the plot and the number of artists to visualise
 # manually.
 #
-# TODO: Make this run with the new cached requests
 
 # %% IMPORTS
 # Set paths
-import sys
 from pathlib import Path
+import sys
 
 # Add the project root to sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent  # adjust as needed
 sys.path.append(str(PROJECT_ROOT))
 
-from functions.scraping import get_lastfm_listener_count, get_similar_artists
-
-# from time import sleep
 from adjustText import adjust_text
 from matplotlib import ticker
 import matplotlib.pyplot as plt
@@ -35,12 +31,13 @@ import pandas as pd
 import seaborn as sns
 from tqdm import tqdm
 
+from functions.scraping import get_lastfm_listener_count, get_similar_artists
+
 # %% INPUTS
 artist_name = "Aephanemer"
 artists_n = 100  # Number of similar artists to get
 
 # %% CONFIGS
-# back_off = 1.5  # Seconds to wait between requests
 lastfm_api_key_path = "../../data/credentials/lastfm_credentials.txt"
 with open(lastfm_api_key_path, encoding="utf-8") as f:
     lastfm_api_key = f.read()
@@ -61,7 +58,6 @@ for artist in tqdm(similar_artists, desc="Getting listener counts"):
     artist["listener_count"] = int(
         get_lastfm_listener_count(artist["name"], lastfm_api_key=lastfm_api_key)
     )
-    # sleep(back_off)  # Don't hammer the server
 df = pd.DataFrame(similar_artists)
 
 # %% PREPARE DATA
