@@ -14,12 +14,21 @@ pip install -r requirements.txt
 
 This project uses the friendly-for-data-analysts VS Code Jupyter code cells extension, so use this repo in VS Code and install the extension.
 
-For dealing with requests, this repository uses a database to cache requests. To initialise the database, follow the instructions in [`data/databases/setup.py`](data/databases/setup.py). 
+For dealing with requests to various end points, this repository uses a database to cache requests, to make things a bit faster and not hammer servers too much. To initialise the database, follow the instructions in [`data/databases/setup.py`](data/databases/setup.py).
 
+### Querying endpoints
+
+Functions query several endpoints, check out their definitions to figure out which ones. Typically the endpoints like one request per second, so the functions will sleep for a bit between requests to avoid hammering the server and causing 429 errors.
+
+To get API keys for endpoints, you can use the following links:
+
+- Last.fm: https://www.last.fm/api/authentication
+
+When working through the scripts, you will find out where to put .txt files with the API keys.
 
 ## Projects
 
-The projects are in the [`projects`](projects) folder.
+All projects are in the [`projects`](projects) folder.
 
 ### [`visualise_similar_artists`](projects/visualise_similar_artists/visualise_similar_artists.py)
 
