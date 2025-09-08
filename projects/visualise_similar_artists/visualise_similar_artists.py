@@ -12,35 +12,33 @@
 # Depending on the number of artists, labels might get crammed and overlap, so you
 # might want to adjust the size of the plot and the number of artists to visualise
 # manually.
-
-# %% INPUTS
-artist_name = "Aephanemer"
-artists_n = 10  # Number of similar artists to get
-
-# %% SET PATHS
-import os
-import sys
-
-module_path = os.path.abspath(os.path.join("../../", "functions"))
-if module_path not in sys.path:
-    sys.path.append(module_path)
+#
 
 # %% IMPORTS
-from time import sleep
+# Set paths
+from pathlib import Path
+import sys
+
+# Add the project root to sys.path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent  # adjust as needed
+sys.path.append(str(PROJECT_ROOT))
 
 from adjustText import adjust_text
 from matplotlib import ticker
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from scraping import get_lastfm_listener_count, get_similar_artists
 import seaborn as sns
 from tqdm import tqdm
 
-# %% CONFIGS
-back_off = 1.5  # Seconds to wait between requests
-lastfm_api_key_path = "../../data/credentials/lastfm_credentials.txt"
+from functions.scraping import get_lastfm_listener_count, get_similar_artists
 
+# %% INPUTS
+artist_name = "Aephanemer"
+artists_n = 100  # Number of similar artists to get
+
+# %% CONFIGS
+lastfm_api_key_path = "../../data/credentials/lastfm_credentials.txt"
 with open(lastfm_api_key_path, encoding="utf-8") as f:
     lastfm_api_key = f.read()
 
@@ -49,7 +47,6 @@ with open(lastfm_api_key_path, encoding="utf-8") as f:
 similar_artists = get_similar_artists(
     artist_name=artist_name, limit=artists_n, lastfm_api_key=lastfm_api_key
 )
-sleep(back_off)  # Don't hammer the server
 
 # Get artist's listener count as a reference
 artist_listener_count = get_lastfm_listener_count(
@@ -57,23 +54,20 @@ artist_listener_count = get_lastfm_listener_count(
 )
 
 # Get listener count for each similar artist
-for artist in tqdm(
-    similar_artists, desc=f"Getting listener counts at 1 request per {back_off} seconds"
-):
+for artist in tqdm(similar_artists, desc="Getting listener counts"):
     artist["listener_count"] = int(
         get_lastfm_listener_count(artist["name"], lastfm_api_key=lastfm_api_key)
     )
-    sleep(back_off)  # Don't hammer the server
 df = pd.DataFrame(similar_artists)
 
 # %% PREPARE DATA
-_df = df[df["listener_count"] > artist_listener_count * 0.9]
+plot_df = df[df["listener_count"] > artist_listener_count * 0.9]
 
 # %% VISUALISE
 # Set up the plot
 sns.set(style="whitegrid")
 plt.figure(figsize=(12, 12))
-ax = sns.scatterplot(data=_df, x="listener_count", y="similarity", color="black")
+ax = sns.scatterplot(data=plot_df, x="listener_count", y="similarity", color="black")
 ax.set_xscale("log")
 
 # Add artist names as labels
@@ -85,7 +79,7 @@ texts = [
         fontsize=13,
         color="black",
     )
-    for _, row in _df.iterrows()
+    for _, row in plot_df.iterrows()
 ]
 adjust_text(texts, arrowprops=dict(arrowstyle="-", color="gray"))
 
