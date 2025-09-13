@@ -1,5 +1,6 @@
 # %% HEADER
-# A collection of functions to get artist data from various sources
+# A collection of functions to get artist data from various sources and do some
+# caching and processing of the request responses.
 
 # %% IMPORTS
 from time import sleep
@@ -7,6 +8,7 @@ from time import sleep
 import requests
 
 from .dbfuncs import db_cache
+from .utils import get_parsed_date
 
 # %% CONSTANTS
 MB_ROOT = "https://musicbrainz.org/ws/2/"
@@ -121,3 +123,34 @@ def get_lastfm_listener_count(artist_name: str, lastfm_api_key: str, **kwargs) -
 
     listener_count = int(resp["artist"]["stats"]["listeners"])
     return listener_count
+
+
+def get_artist_albums(artist_name: str, **kwargs) -> list:
+    """Get album releases for an artist from MusicBrainz.
+
+    This returns the first release of each album, not necessarily the latest.
+
+    Args:
+        artist_name (str): The name of the artist.
+
+    Returns:
+        list: The album releases with some details.
+    """
+    mbid = get_artist_mbid(artist_name)
+    q = f"{MB_ROOT}release-group?artist={mbid}&type=album&fmt=json"
+    resp = fetch(q, **kwargs)
+
+    albums = [
+        {
+            "artist_name": artist_name,
+            "album_title": album.get("title"),
+            "release_date": get_parsed_date(album.get("first-release-date")),
+            "album_mbid": album.get("id"),
+        }
+        for album in resp["release-groups"]
+        # Needs a release date
+        if album.get("first-release-date")
+        # No secondary types - this is likely some rerelease
+        and not album.get("secondary-types")
+    ]
+    return albums
