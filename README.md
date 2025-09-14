@@ -31,13 +31,13 @@ When working through the scripts, you will find out where to put .txt files with
 
 All projects are in the [`projects`](projects) folder.
 
-### [`compare_popularity`](projects/compare_popularity/compare_popularity.py)
+### [`compare_platform_popularity`](projects/compare_platform_popularity/compare_platform_popularity.py)
 
-Compare the popularity of artists on [Last.fm](https://www.last.fm/) and [spotify](https://open.spotify.com/us/) to see how different the two platforms are. The output is a scatterplot like this:
+Compare the popularity of artists on music platforms [Last.fm](https://www.last.fm/) and [Spotify](https://open.spotify.com/us/) to see if one can be used as a proxy for the other. The output is a scatterplot like this:
 
-...
+![Platform comparison](assets/images/Compare_platform_popularity.png)
 
-This gives an idea of why it might not be a good idea to use only Spotify or Last.fm listeners as a proxy for artist popularity.
+This illustrates that the number of Spotify followers and Last.fm listeners is a reasonable proxy for artist popularity for different genres, though Spotify popularity is not as good a proxy for either of them. Note that the number of Spotify _listeners_ is not easily scraped and is therefore not included in this analysis.
 
 ---
 

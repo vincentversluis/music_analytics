@@ -1,6 +1,6 @@
 # My own stuff
 *pruts*
-
+*.db
 # Credentials and keys and such
 *credentials*
 *key*
@@ -8,7 +8,7 @@
 # Ignore everything in /data except a couple of things
 /data/*
 !/data/databases/setup.py
-!/data/credentials/
+!/data/credentials/.keep
 
 ################################################################################
 

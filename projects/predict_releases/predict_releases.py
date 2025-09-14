@@ -1,7 +1,6 @@
 # %% HEADING
 # The aim of this script is to predict when a band will release a new album. No fancy
 # modelling is used, just some simple metrics and visualisation.
-# TODO: Add stuff to README.md
 
 # %% IMPORTS
 # Set paths
