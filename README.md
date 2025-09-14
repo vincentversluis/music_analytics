@@ -24,6 +24,7 @@ To get API keys for endpoints, you can use the following links:
 
 - Last.fm: https://www.last.fm/api/authentication
 - Musicbrainz: https://musicbrainz.org/doc/MusicBrainz_API, though an API key is not required
+- Spotify: https://developer.spotify.com/documentation/web-api, for a client ID and secret
 
 When working through the scripts, you will find out where to put .txt files with the API keys.
 
