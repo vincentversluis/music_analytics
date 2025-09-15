@@ -64,7 +64,7 @@ for genre in genres:
         # Not every artist has a Spotify data
         spotify_followers = spotify_data["followers"]["total"] if spotify_data else None
         spotify_popularity = spotify_data["popularity"] if spotify_data else None
-        
+
         artists.append({
             "name": artist["name"],
             "genre": genre,

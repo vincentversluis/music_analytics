@@ -32,9 +32,9 @@ When working through the scripts, you will find out where to put .txt files with
 
 All projects are in the [`projects`](projects) folder.
 
-### [`compare_platform_popularity`](projects/compare_platform_popularity/compare_platform_popularity.py)
+### [`compare_platform_popularity`](projects/compare_platform_popularity/)
 
-Compare the popularity of artists on music platforms [Last.fm](https://www.last.fm/) and [Spotify](https://open.spotify.com/us/) to see if one can be used as a proxy for the other. The output is a scatterplot like this:
+Compare the popularity of artists on music platforms [Last.fm](https://www.last.fm/) and [Spotify](https://open.spotify.com/us/) to see if one can be used as a proxy for the other. With a collection of several hundred pretty random artists in different genres, the output is a scatterplot like this:
 
 ![Platform comparison](assets/images/Compare_platform_popularity.png)
 
@@ -67,6 +67,8 @@ This can be used to find artists to listen to. Though I am unsure how Last.fm's 
 Visualise [setlist.fm](https://setlist.fm/) data to get an idea of what time of year tours start, resulting in something like:
 
 ...
+
+This gives an idea of when bands start a new tour in a specific part of the world.
 
 ---
 
