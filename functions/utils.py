@@ -15,8 +15,8 @@ from dateutil import parser
 # %% FUNCTIONS
 def get_parsed_date(date: str, default: str = "2020-07-31") -> arrow.Arrow:
     """Get a date from a string.
-    
-    This function uses the dateutil parser to cover different formats more easily than 
+
+    This function uses the dateutil parser to cover different formats more easily than
     than the standard arrow.get() function. Dates with missing date parts (such as day)
     are filled in from the default date (such as 31 for day)
 
@@ -25,7 +25,7 @@ def get_parsed_date(date: str, default: str = "2020-07-31") -> arrow.Arrow:
 
     Returns:
         arrow.Arrow: The parsed date.
-    """    
+    """
     date = parser.parse(date, default=arrow.get(default))
     date = arrow.get(date)
     return date
@@ -41,7 +41,7 @@ def ttl_cache(maxsize: int = 1000, typed: bool = False, ttl: int = -1) -> Callab
 
     Returns:
         Callable: The decorated function.
-    """    
+    """
     if ttl <= 0:
         ttl = 65536
 
