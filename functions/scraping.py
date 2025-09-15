@@ -4,6 +4,7 @@
 
 # %% IMPORTS
 import base64
+from functools import cache
 from time import sleep
 
 import requests
@@ -195,7 +196,7 @@ def get_spotify_access_token(spotify_client_id: str, spotify_client_secret: str)
 
     Returns:
         str: The access token.
-    """    
+    """
     auth_url = "https://accounts.spotify.com/api/token"
     auth_header = base64.b64encode(
         f"{spotify_client_id}:{spotify_client_secret}".encode()
@@ -212,7 +213,10 @@ def get_spotify_access_token(spotify_client_id: str, spotify_client_secret: str)
     return resp.json()["access_token"]
 
 
-def get_spotify_artist(artist_name: str, spotify_client_id: str, spotify_client_secret: str) -> dict:
+@cache
+def get_spotify_artist(
+    artist_name: str, spotify_client_id: str, spotify_client_secret: str
+) -> dict:
     """Get Spotify artist info.
 
     This function uses the Spotify client ID and secret to get artist info from Spotify.
