@@ -242,7 +242,31 @@ def get_spotify_artist(
         for artist in resp.json()["artists"]["items"]
         if artist["name"].lower() == artist_name.lower()
     ]
+    sleep(1.5)  # Sleep to avoid hammering the server
     if artist_info:
         return artist_info[0]
     else:
         return None
+
+
+@cache
+def get_setlists(artist: str, setlistfm_api_key: str, page:int=1) -> dict:
+    """Get setlists for an artist from Setlist.fm.
+
+    Args:
+        artist (str): The name of the artist.
+        setlistfm_api_key (str): The Setlist.fm API key.
+        page (int, optional): The page number. Defaults to 1.
+
+    Returns:
+        dict: The setlists with some details.
+    """    
+    headers = {
+        'x-api-key': setlistfm_api_key,
+        'Accept': 'application/json'
+    }
+    mbid = get_artist_mbid(artist)
+    url = f'https://api.setlist.fm/rest/1.0/artist/{mbid}/setlists?p={page}'
+    response = requests.get(url, headers=headers)
+    sleep(1.5)  # Sleep to avoid hammering the server
+    return response.json()
