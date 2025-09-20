@@ -49,6 +49,16 @@ This illustrates that the number of Spotify followers and Last.fm listeners is a
 
 ---
 
+### [`match_festivals`](projects/match_festivals/)
+
+Analyse festival data from [concerts-metal.com](https://en.concerts-metal.com/festivals.html) and find which festivals are a good match for a specific band, using [market basket analysis](https://en.wikipedia.org/wiki/Affinity_analysis).
+
+...
+
+The result can be used by artists to find a good festival to aim to perform at.
+
+---
+
 ### [`predict_releases`](projects/predict_releases/predict_releases.py)
 
 Visualise [musicbrainz](https://musicbrainz.org/) data to visualise when albums were released and when to expect the next one, based on some simple metrics:
