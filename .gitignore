@@ -1,14 +1,18 @@
-# My own stuff
+################################# My own stuff #################################
+# Development stuff
 *pruts*
 
 # Credentials and keys and such
 *credentials*
 *key*
+*.db
 
 # Ignore everything in /data except a couple of things
 /data/*
 !/data/databases/setup.py
-!/data/credentials/
+
+# And keep the .keep file
+!*.keep
 
 ################################################################################
 

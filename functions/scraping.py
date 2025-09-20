@@ -1,12 +1,16 @@
 # %% HEADER
-# A collection of functions to get artist data from various sources
+# A collection of functions to get artist data from various sources and do some
+# caching and processing of the request responses.
 
 # %% IMPORTS
+import base64
+from functools import cache
 from time import sleep
 
 import requests
 
 from .dbfuncs import db_cache
+from .utils import get_parsed_date, ttl_cache
 
 # %% CONSTANTS
 MB_ROOT = "https://musicbrainz.org/ws/2/"
@@ -118,6 +122,148 @@ def get_lastfm_listener_count(artist_name: str, lastfm_api_key: str, **kwargs) -
     """
     q = f"{LASTFM_ROOT}?method=artist.getinfo&artist={artist_name}&api_key={lastfm_api_key}&format=json"
     resp = fetch(q, **kwargs)
-
-    listener_count = int(resp["artist"]["stats"]["listeners"])
+    try:
+        listener_count = int(resp["artist"]["stats"]["listeners"])
+    except KeyError:
+        print(f"No listener count found for {artist_name}")
+        listener_count = None
     return listener_count
+
+
+def get_artist_albums(artist_name: str, **kwargs) -> list:
+    """Get album releases for an artist from MusicBrainz.
+
+    This returns the first release of each album, not necessarily the latest.
+
+    Args:
+        artist_name (str): The name of the artist.
+
+    Returns:
+        list: The album releases with some details.
+    """
+    mbid = get_artist_mbid(artist_name)
+    q = f"{MB_ROOT}release-group?artist={mbid}&type=album&fmt=json"
+    resp = fetch(q, **kwargs)
+
+    albums = [
+        {
+            "artist_name": artist_name,
+            "album_title": album.get("title"),
+            "release_date": get_parsed_date(album.get("first-release-date")),
+            "album_mbid": album.get("id"),
+        }
+        for album in resp["release-groups"]
+        # Needs a release date
+        if album.get("first-release-date")
+        # No secondary types - this is likely some rerelease
+        and not album.get("secondary-types")
+    ]
+    return albums
+
+
+def get_genre_artists(genre: str, n_artists: int = 25, **kwargs) -> list:
+    """Get artists from a genre from MusicBrainz.
+
+    Args:
+        genre (str): The genre to get artists for.
+        n_artists (int, optional): The number of artists to get. Defaults to 25, gets cut off at 100.
+
+    Returns:
+        list: The artists.
+    """
+    if n_artists > 100:  # Single MusicBrainz request can only get 100 artists
+        n_artists = min(n_artists, 100)
+        print(f"Warning: Capping artists for genre {genre} at 100.")
+    q = f'{MB_ROOT}artist/?query=tag:"{genre}"&limit={n_artists}&fmt=json'
+    resp = fetch(q, **kwargs)
+
+    artists = [
+        {"name": artist["name"], "mbid": artist["id"]} for artist in resp["artists"]
+    ]
+    return artists
+
+
+@ttl_cache(maxsize=128, ttl=3540)  # Token expires in 3600, so leave some room
+def get_spotify_access_token(spotify_client_id: str, spotify_client_secret: str) -> str:
+    """Get a Spotify access token.
+
+    This function uses the Spotify client ID and secret to get an access token. The access
+    token is then cached for 3540 seconds (1 hour) to avoid repeatedly requesting it.
+
+    Args:
+        spotify_client_id (str): The Spotify client ID.
+        spotify_client_secret (str): The Spotify client secret.
+
+    Returns:
+        str: The access token.
+    """
+    auth_url = "https://accounts.spotify.com/api/token"
+    auth_header = base64.b64encode(
+        f"{spotify_client_id}:{spotify_client_secret}".encode()
+    ).decode()
+
+    headers = {
+        "Authorization": f"Basic {auth_header}",
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
+    data = {"grant_type": "client_credentials"}
+
+    resp = requests.post(auth_url, headers=headers, data=data)
+    resp.raise_for_status()
+    return resp.json()["access_token"]
+
+
+@cache
+def get_spotify_artist(
+    artist_name: str, spotify_client_id: str, spotify_client_secret: str
+) -> dict:
+    """Get Spotify artist info.
+
+    This function uses the Spotify client ID and secret to get artist info from Spotify.
+    The access token is cached for 3540 seconds (1 hour) to avoid repeatedly requesting it.
+
+    Args:
+        artist_name (str): The name of the artist.
+        spotify_client_id (str): The Spotify client ID.
+        spotify_client_secret (str): The Spotify client secret.
+
+    Returns:
+        dict: The artist info or None if not found.
+    """
+    token = get_spotify_access_token(spotify_client_id, spotify_client_secret)
+    search_url = "https://api.spotify.com/v1/search"
+    headers = {"Authorization": f"Bearer {token}"}
+    params = {"q": artist_name, "type": "artist", "limit": 1}
+
+    resp = requests.get(search_url, headers=headers, params=params)
+    resp.raise_for_status()
+    artist_info = [
+        artist
+        for artist in resp.json()["artists"]["items"]
+        if artist["name"].lower() == artist_name.lower()
+    ]
+    sleep(1.5)  # Sleep to avoid hammering the server
+    if artist_info:
+        return artist_info[0]
+    else:
+        return None
+
+
+@cache
+def get_setlists(artist: str, setlistfm_api_key: str, page: int = 1) -> dict:
+    """Get setlists for an artist from Setlist.fm.
+
+    Args:
+        artist (str): The name of the artist.
+        setlistfm_api_key (str): The Setlist.fm API key.
+        page (int, optional): The page number. Defaults to 1.
+
+    Returns:
+        dict: The setlists with some details.
+    """
+    headers = {"x-api-key": setlistfm_api_key, "Accept": "application/json"}
+    mbid = get_artist_mbid(artist)
+    url = f"https://api.setlist.fm/rest/1.0/artist/{mbid}/setlists?p={page}"
+    response = requests.get(url, headers=headers)
+    sleep(1.5)  # Sleep to avoid hammering the server
+    return response.json()
