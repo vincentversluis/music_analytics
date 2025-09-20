@@ -2,7 +2,9 @@
 
 This project attempts to visualise when bands start a new tour in a specific part of the world, using data from [concerts-metal.com](https://concerts-metal.com/).
 
-The retrieval stage is separated from the visualisation stage in [0_get_data_concerts-metal.py](0_get_data_concerts-metal.py), as this requires some time consuming API calls to [Last.fm](https://www.last.fm/) for finding bands to investigate and [concerts-metal.com](https://concerts-metal.com/) for getting data on concerts. The data is saved to a csv file and loaded in [1_visualise_tours.py](1_visualise_tours.py), where it is then visualised.
+The retrieval stage is separated from the visualisation stage in [0_get_data_concerts-metal.py](0_get_data_concerts-metal.py), as this requires some time consuming API calls to [Last.fm](https://www.last.fm/) for finding bands to investigate and [concerts-metal.com](https://concerts-metal.com/) for getting data on concerts. The data is saved to a csv file and loaded in [1_visualise_tours.py](1_visualise_tours.py), where it is then visualised, resulting in something like this:
+
+![First date of tours](../../assets/images/First_date_of_tours.png)
 
 ## Choice of data source
 
@@ -49,4 +51,3 @@ The intention is to aggregate data by artist by tour. The scraped data (partly m
 The rules for combining multiple concerts into one tour are simple:
 
 - A concert has at least 6 concerts, this means the Japan concerts on 18/10/2014 and 19/10/2014 are not part of a tour. These are concerts that are probably incidental gigs or festival performances.
-- A concert does not fall within another tour of at least 6 concerts, this means the Russian concert on 29/10/2014 is not part of a tour. These are probably concerts that catch-ups (for cancellations) and were not originally planned. These might confuse the end date of the tour.

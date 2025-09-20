@@ -62,11 +62,11 @@ This can be used to find artists to listen to. Though I am unsure how Last.fm's 
 
 ---
 
-### [`visualise_tours`](projects/visualise_tours/visualise_tours.py)
+### [`visualise_tours`](projects/visualise_tours/)
 
-Visualise [setlist.fm](https://setlist.fm/) data to get an idea of what time of year tours start, resulting in something like:
+Visualise [concerts-metal.com](https://en.concerts-metal.com/) data to get an idea of what time of year tours start for various bands, resulting in something like:
 
-...
+![First date of tours](assets/images/First_date_of_tours.png)
 
 This gives an idea of when bands start a new tour in a specific part of the world.
 
@@ -74,4 +74,4 @@ This gives an idea of when bands start a new tour in a specific part of the worl
 
 ## Contributing
 
-Contributions are welcome! Feel free to open an issue or pull request.
+This is a project to showcase some of my skills in data analysis, so contributions cannot be accepted, but feel free to fork and ask questions.
