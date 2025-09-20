@@ -22,11 +22,18 @@ Functions query several endpoints, check out their definitions to figure out whi
 
 To get API keys for endpoints, you can use the following links:
 
-- Last.fm: https://www.last.fm/api/authentication
-- Musicbrainz: https://musicbrainz.org/doc/MusicBrainz_API, though an API key is not required
-- Spotify: https://developer.spotify.com/documentation/web-api, for a client ID and secret
+- [Last.fm](https://www.last.fm/api/authentication)
+- [Musicbrainz](https://musicbrainz.org/doc/MusicBrainz_API), though an API key is not required
+- [Setlist.fm](https://api.setlist.fm/docs/1.0/index.html)
+- [Spotify](https://developer.spotify.com/documentation/web-api), for a client ID and secret
 
 When working through the scripts, you will find out where to put .txt files with the API keys.
+
+### Other sources
+
+Other sources of data for projects in this repository:
+
+- [concerts-metal.com](https://en.concerts-metal.com/), which is scraped using Selenium
 
 ## Projects
 
