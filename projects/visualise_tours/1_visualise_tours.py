@@ -1,20 +1,47 @@
 # %% HEADER
-
+# TODO: Clean up tours - many values are null, some previous tours are in the middle of another tour
 # TODO: Add stuff to README.md
+
+"""
+Cleaning up the input might be tricky, as tour names are not always consistent. A reasonable rule of
+thumb is to use the concerts-metal.com names of each concert, then if at least X concerts have the same
+name, it consitutes a tour. 
+"""
 
 # %% IMPORTS
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import db_utils
 import arrow
+import json
 
 # %% INPUTS
-years_back = 10
-db_path = "db.sqlite3"
 
-# %% GET
-setlists = db_utils.get_raw_setlists(db_path)
+# %% GET DATA
+with open('../../data/setlists.json', encoding="utf-8") as f:
+    setlists = json.load(f)
+
+# %%
+concerts = []
+for setlist in setlists:
+    lat = setlist['venue']['city']['coords'].get('lat')
+    long = setlist['venue']['city']['coords'].get('long')
+    if lat and long:
+        coords = (lat, long)
+    else:
+        coords = None
+    concerts.append({
+        'artist': setlist['artist']['name'],
+        'tour': setlist.get("tour", {}).get("name"),
+        'date': setlist['eventDate'],
+        'country': setlist['venue']['city']['country']['code'],
+        'coords': coords
+    })
+# %%
+df = pd.DataFrame(concerts)
+# %%
+
+# %%
 
 # %%
 df = pd.DataFrame([
@@ -75,5 +102,17 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+
+# %%
+import selenium
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+url = 'https://en.concerts-metal.com/g-4648__Insomnium.html'
+url = 'https://en.concerts-metal.com/g-2254__At_The_Gates.html'
+driver = webdriver.Chrome()
+driver.get(url)
 
 # %%

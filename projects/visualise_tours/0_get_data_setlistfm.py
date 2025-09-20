@@ -46,7 +46,6 @@ for artist in tqdm(artists, desc="Getting setlists"):
 
         # Break if current page is last page
         if page == ceil(artist_setlists["total"] / 20):
-            # print(f"Done collecting setlists for {artist}. Reached last page.")
             break
 
         # Break if earliest retrieved setlist is from before threshold year
@@ -54,23 +53,12 @@ for artist in tqdm(artists, desc="Getting setlists"):
             get_parsed_date(setlist["eventDate"]).year for setlist in artist_setlists['setlist']
         ])
         if earliest_year < arrow.now().year - years_back:
-            # print(
-            #     f"Done collecting setlists for {artist}. Reached {years_back} years back."
-            # )
             break
 
-        # Next page
         page += 1
 
 # Save to json for later use
 with open('../../data/setlists.json', 'w', encoding="utf-8") as f:
     json.dump(setlists, f)
     
-# %%
-with open('../../data/setlists.json', encoding="utf-8") as f:
-    list_of_dicts = json.load(f)
-    
-list_of_dicts
-# %%
-print(len(list_of_dicts))
 # %%
