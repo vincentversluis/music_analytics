@@ -74,7 +74,6 @@ similar_artists.sort(key=lambda x: x["listener_count"], reverse=True)
 artists = [artist['name'] for artist in similar_artists[:artists_listener_top_n]]
 artists.append(artist_name)  # Add the artist of interest as a reference
 
-# %%
 # Start browser
 driver = webdriver.Chrome()
 
@@ -139,17 +138,15 @@ for artist in tqdm(artists, desc="Getting concerts"):
     # Then split by <br>, which is the next line
     concerts_texts = html_text.split("<h2>Last events</h2>")[1].split("<br></div>")[0].split("<br>")
 
-    # Parse the texts with a regex
-    concerts.extend([
-        regex_concert.match(concert_text).groupdict() 
-        for concert_text 
-        in concerts_texts])
+    # Add details of concert
+    for concert_text in concerts_texts:
+        # Use regex to parse the texts and add details to concerts list
+        concert_details = regex_concert.match(concert_text).groupdict()
+        concerts.append({**{"artist": artist}, **concert_details})
     
 # Close browser
 driver.quit()
 
 # Save to csv for later use
 pd.DataFrame(concerts).to_csv("../../data/concerts.csv", index=False)
-
-# %%# %% CONFIGS
-concerts
+# %%
