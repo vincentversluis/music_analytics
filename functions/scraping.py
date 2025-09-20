@@ -250,7 +250,7 @@ def get_spotify_artist(
 
 
 @cache
-def get_setlists(artist: str, setlistfm_api_key: str, page:int=1) -> dict:
+def get_setlists(artist: str, setlistfm_api_key: str, page: int = 1) -> dict:
     """Get setlists for an artist from Setlist.fm.
 
     Args:
@@ -260,13 +260,10 @@ def get_setlists(artist: str, setlistfm_api_key: str, page:int=1) -> dict:
 
     Returns:
         dict: The setlists with some details.
-    """    
-    headers = {
-        'x-api-key': setlistfm_api_key,
-        'Accept': 'application/json'
-    }
+    """
+    headers = {"x-api-key": setlistfm_api_key, "Accept": "application/json"}
     mbid = get_artist_mbid(artist)
-    url = f'https://api.setlist.fm/rest/1.0/artist/{mbid}/setlists?p={page}'
+    url = f"https://api.setlist.fm/rest/1.0/artist/{mbid}/setlists?p={page}"
     response = requests.get(url, headers=headers)
     sleep(1.5)  # Sleep to avoid hammering the server
     return response.json()

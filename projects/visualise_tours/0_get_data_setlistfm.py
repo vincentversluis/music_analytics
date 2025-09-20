@@ -1,7 +1,5 @@
 # %% HEADING
-#
-# TODO: Header
-# Remove commented out code
+# Get data from Setlist.fm and save to csv
 
 # %% IMPORTS
 # Set paths
@@ -42,7 +40,7 @@ for artist in tqdm(artists, desc="Getting setlists"):
     page = 1  # Start from page 1
     while True:
         artist_setlists = get_setlists(artist, setlistfm_api_key, page=page)
-        setlists.extend(artist_setlists['setlist'])
+        setlists.extend(artist_setlists["setlist"])
 
         # Break if current page is last page
         if page == ceil(artist_setlists["total"] / 20):
@@ -50,7 +48,8 @@ for artist in tqdm(artists, desc="Getting setlists"):
 
         # Break if earliest retrieved setlist is from before threshold year
         earliest_year = min([
-            get_parsed_date(setlist["eventDate"]).year for setlist in artist_setlists['setlist']
+            get_parsed_date(setlist["eventDate"]).year
+            for setlist in artist_setlists["setlist"]
         ])
         if earliest_year < arrow.now().year - years_back:
             break
@@ -58,7 +57,7 @@ for artist in tqdm(artists, desc="Getting setlists"):
         page += 1
 
 # Save to json for later use
-with open('../../data/setlists.json', 'w', encoding="utf-8") as f:
+with open("../../data/setlists.json", "w", encoding="utf-8") as f:
     json.dump(setlists, f)
-    
+
 # %%
