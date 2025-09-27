@@ -49,7 +49,20 @@ This illustrates that the number of Spotify followers and Last.fm listeners is a
 
 ---
 
+
+### [`compare_platform_similarity`](projects/compare_platform_popularity/)
+
+(coming soon)
+
+Compare the similarity between artists on music platforms [Last.fm](https://www.last.fm/) and [Encyclopaedia Metallum](https://www.metal-archives.com/) to see if one can be used as a proxy for the other. Comparing the quantitative similarity to a specific artist for three artists of different fame, the output is a scatterplot like this:
+
+...
+
+---
+
 ### [`match_festivals`](projects/match_festivals/)
+
+(coming soon)
 
 Analyse festival data from [concerts-metal.com](https://en.concerts-metal.com/festivals.html) and find which festivals are a good match for a specific band, using [market basket analysis](https://en.wikipedia.org/wiki/Affinity_analysis).
 
