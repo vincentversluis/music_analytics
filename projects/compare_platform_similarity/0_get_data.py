@@ -13,7 +13,7 @@ from selenium.webdriver.common.by import By
 from tqdm import tqdm
 
 # %% INPUT
-artists = ['Aephanemer', 'Dark Tranquillity', 'Metallica']
+artists = ["Aephanemer", "Dark Tranquillity", "Metallica"]
 lastfm_similar_n = 666  # Number of similar artists to get from Last.fm
 
 # %% CONFIGS
@@ -32,7 +32,7 @@ for artist in tqdm(artists, desc="Getting artists"):
 
     # Get all tabs
     tabs_element = driver.find_element(By.XPATH, '//*[@id="band_tabs"]/ul')
-    tabs = tabs_element.find_elements(By.XPATH, './/li')
+    tabs = tabs_element.find_elements(By.XPATH, ".//li")
 
     # Check if similar artists exist - if so, click
     if "Similar Artists" not in [tab.text for tab in tabs]:
@@ -43,7 +43,7 @@ for artist in tqdm(artists, desc="Getting artists"):
             tab.click()
             sleep(2)
             break
-        
+
     # Break if no similar artists found
     if driver.find_elements(By.XPATH, '//*[@id="no_artists"]'):
         print(f"0002: Similar artists tab not found for {artist}")
@@ -55,7 +55,9 @@ for artist in tqdm(artists, desc="Getting artists"):
         sleep(2)
 
     # Get similar artists table and parse
-    similar_artists_html = driver.find_element(By.XPATH, '//*[@id="artist_list"]/tbody').get_attribute("innerHTML")
+    similar_artists_html = driver.find_element(
+        By.XPATH, '//*[@id="artist_list"]/tbody'
+    ).get_attribute("innerHTML")
     soup = BeautifulSoup(similar_artists_html, "html.parser")
 
     # Collect data by row
@@ -73,13 +75,15 @@ for artist in tqdm(artists, desc="Getting artists"):
             "url": artist_url,
             "country": country,
             "genre": genre,
-            "score": int(similarity_score)
+            "score": int(similarity_score),
         })
-        
+
 # Close browser
 driver.quit()
 
 # Save to csv for later use
-pd.DataFrame(similar_artists_metallum).to_csv("../../data/artists_platform_similarity_metallum.csv", index=False)
+pd.DataFrame(similar_artists_metallum).to_csv(
+    "../../data/artists_platform_similarity_metallum.csv", index=False
+)
 
 # %%
