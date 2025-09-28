@@ -34,6 +34,7 @@ When working through the scripts, you will find out where to put .txt files with
 Other sources of data for projects in this repository:
 
 - [concerts-metal.com](https://en.concerts-metal.com/), which is scraped using Selenium
+- [Encyclopaedia Metallum](https://www.metal-archives.com/), which is scraped using Selenium
 
 ## Projects
 
@@ -52,11 +53,11 @@ This illustrates that the number of Spotify followers and Last.fm listeners is a
 
 ### [`compare_platform_similarity`](projects/compare_platform_popularity/)
 
-(coming soon)
+The music platforms [Last.fm](https://www.last.fm/) and [Encyclopaedia Metallum](https://www.metal-archives.com/) offer similar artists to a chosen artist. Last.fm appears to do this by analysing users' scrobbles, whilst Encyclopaedia Metallum uses crowdsourced suggestions. To see if the suggestions are consistent, this project compares the given suggestions for three artists of different fame, ranked by the platform's similarity score or suggestion count. The output is a scatterplot like this:
 
-Compare the similarity between artists on music platforms [Last.fm](https://www.last.fm/) and [Encyclopaedia Metallum](https://www.metal-archives.com/) to see if one can be used as a proxy for the other. Comparing the quantitative similarity to a specific artist for three artists of different fame, the output is a scatterplot like this:
+![Platform comparison](assets/images/Compare_platform_similarity.png)
 
-...
+This illustrates that the different platforms have some consensus on the top similar artists, though beyond this, the ranking can differ significantly, with some (to me) amusing descrepancies.
 
 ---
 
