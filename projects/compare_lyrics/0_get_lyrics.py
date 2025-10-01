@@ -213,8 +213,13 @@ for song in tqdm(songs, desc="Analysing lyrics for each song"):
 df = pd.DataFrame(songs)
 
 # %%
-# Calculate average sentiment per artist
-df.groupby('artist')['lexical_diversity'].mean()
+# Calculate MEDIAN sentiment per artist
+df.groupby('artist')['lyrics_length'].median()
+
+# %%
+# ! TODO: Check longest lyrics per artist
+# Get longest lyrics per artist
+[song for song in songs if song['lyrics_length'] > 500]
 
 # %% ANALYSE AGGREGATED LYRICS PER ARTIST
 # Analyse by combined lyrics per artist, where analysis per song does not make a lot of sense
