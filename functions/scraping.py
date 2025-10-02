@@ -270,8 +270,11 @@ def get_setlists(artist: str, setlistfm_api_key: str, page: int = 1) -> dict:
     sleep(1.5)  # Sleep to avoid hammering the server
     return response.json()
 
-def get_artist_songs(artist: str, client_access_token: str, per_page: int = 20, page: int = 1) -> dict:
+def get_artist_songs(artist: str, client_access_token: str, per_page: int = 20, page: int = 1, **kwargs) -> dict:
     """Get songs and url to lyrics for an artist from Genius.
+    
+    NOTE: If Genius is dicking around, this might be because of it detecting a VPN. If 
+    so, turn off the VPN and try again.
 
     Args:
         artist (str): The artist to get songs for.
@@ -288,12 +291,15 @@ def get_artist_songs(artist: str, client_access_token: str, per_page: int = 20, 
     
     # Get Genius hits
     genius_search_url = f"{GENIUS_ROOT}search?q={artist}&per_page={per_page}&page={page}&access_token={client_access_token}"
-    resp = fetch(genius_search_url)
+    resp = fetch(genius_search_url, **kwargs)
     return resp
 
-def get_genius_lyrics(url: str) -> list:
+def get_genius_lyrics(url: str, **kwargs) -> list:
     """Get lyrics from a Genius song page.
     
+    NOTE: If Genius is dicking around, this might be because of it detecting a VPN. If 
+    so, turn off the VPN and try again.
+
     This is a literal scrape of the lyrics page and will likely include some junk, such
     as a reference to the number of contributors, verse tags and whitespace. But it works
 
@@ -303,7 +309,7 @@ def get_genius_lyrics(url: str) -> list:
     Returns:
         list: Each line of the lyrics, which may include some junk.
     """    
-    response = fetch(url)
+    response = fetch(url, **kwargs)
     soup = BeautifulSoup(response, "html.parser")
     
     # Lyrics are in multiple containsers

@@ -20,14 +20,16 @@ import re
 
 from langdetect import DetectorFactory, detect
 from langdetect.lang_detect_exception import LangDetectException
+from nrclex import NRCLex
 import pandas as pd
 from tqdm import tqdm
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import yake
 
 from functions.scraping import get_artist_songs, get_genius_lyrics
 
 # %% INPUTS
-...
+
 
 # %% CONFIGS
 genius_client_access_token_path = "../../data/credentials/genius_client_access_token.txt"
@@ -122,9 +124,8 @@ def count_pronouns(text: str) -> dict:
 
 
 # %% GET DATA
-bands_path = "../../data/bands.csv"
-artists_df = pd.read_csv(bands_path, delimiter=";")
-artists = artists_df["Band"].to_list()[:25]  # Just the first so many
+with open('../../data/Favourites.txt', encoding="utf-8") as file:
+    artists = file.read().splitlines()
 
 # Collect songs for artists
 songs = []
@@ -184,8 +185,8 @@ for song in tqdm(songs, desc="Detecting language"):
 # Remove songs with no lyrics or no English lyrics (entschuldigung, Heaven Shall Burn)
 songs = [song for song in songs if song['lyrics'] and song['language'] == "en"]
 
-# %% ANALYSE DATA PER SONG
-# Analyse lyrics per song
+# %% ANALYSE DATA
+##### Analyse lyrics per song #####
 for song in tqdm(songs, desc="Analysing lyrics for each song"):
     # Lyrics length
     song['lyrics_length'] = len(song['lyrics'].split())
@@ -209,30 +210,61 @@ for song in tqdm(songs, desc="Analysing lyrics for each song"):
     # Sentiment
     song['sentiment'] = get_compound_sentiment(song['lyrics'])
 
-# %%
-df = pd.DataFrame(songs)
+songs_df = pd.DataFrame(songs)
 
-# %%
-# Calculate MEDIAN sentiment per artist
-df.groupby('artist')['lyrics_length'].median()
+# Normalise lyrics length to be a number between 0 and 1
+songs_df['lyrics_length_norm'] = songs_df['lyrics_length'] / songs_df['lyrics_length'].max()
 
-# %%
-# ! TODO: Check longest lyrics per artist
-# Get longest lyrics per artist
-[song for song in songs if song['lyrics_length'] > 500]
+##### Analyse per artist #####
+# Aggregate
+artist_agg_df = (
+    songs_df
+    .groupby('artist')
+    .agg({
+        'lyrics': lambda x: ' '.join(x),
+        'lyrics_length': 'mean',
+        'lyrics_length_norm': 'mean',
+        'lexical_diversity': 'mean',
+        'perspective': 'mean',
+        'directness': 'mean',
+        'sentiment': 'mean'
+    })
+    .reset_index()
+)
 
-# %% ANALYSE AGGREGATED LYRICS PER ARTIST
-# Analyse by combined lyrics per artist, where analysis per song does not make a lot of sense
 # Keywords
-# Topic
+kw_extractor = yake.KeywordExtractor(lan="en", n=1, top=10)
+artist_agg_df['keywords'] = artist_agg_df['lyrics'].apply(
+    lambda x: {kw: score for kw, score in kw_extractor.extract_keywords(x)}
+)
+
 # Emotion
+artist_agg_df['emotion_profile'] = artist_agg_df['lyrics'].apply(lambda x: NRCLex(x).affect_frequencies)
 
+# %%
+# Explode keywords into one-hot-encoded columns
+emotion_df = artist_agg_df['emotion_profile'].apply(pd.Series)
+emotion_df = emotion_df.add_prefix('emotion_')
+emotion_df = emotion_df.fillna(0)
+artist_agg_df = pd.concat([artist_agg_df.drop(columns=['emotion_profile']), emotion_df], axis=1)
 
-# %% ANALYSE DATA COMPARED WITH OTHER ARTISTS
-# TF-IDF (signature vocabulary)
+# Explode emotion profile into columns with profile values
+keywords_df = artist_agg_df['keywords'].apply(pd.Series)
+keywords_df = keywords_df.add_prefix('keyword_')
+keywords_df = keywords_df.fillna(0)
+artist_agg_df = pd.concat([artist_agg_df.drop(columns=['keywords']), keywords_df], axis=1)
+
+# ! TODO: TF-IDF (signature vocabulary)
 
 # %% VISUALISE DATA
 # Graphs with dimensions
 # Network with some generalised similarity
     
 # %% PRUTS
+artist_agg_df
+
+
+# %%
+
+
+# %%
