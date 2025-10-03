@@ -294,6 +294,7 @@ def get_artist_songs(artist: str, client_access_token: str, per_page: int = 20, 
     resp = fetch(genius_search_url, **kwargs)
     return resp
 
+
 def get_genius_lyrics(url: str, **kwargs) -> list:
     """Get lyrics from a Genius song page.
     
@@ -308,14 +309,20 @@ def get_genius_lyrics(url: str, **kwargs) -> list:
 
     Returns:
         list: Each line of the lyrics, which may include some junk.
-    """    
+    """   
     response = fetch(url, **kwargs)
     soup = BeautifulSoup(response, "html.parser")
-    
-    # Lyrics are in multiple containsers
+
+    # Get containers with lyrics
     lyrics_containers = soup.find_all("div", attrs={"data-lyrics-container": "true"})
-    
+
+    # Remove divs with annotations
+    for container in lyrics_containers:
+        for div in container.find_all("div", attrs={"data-exclude-from-selection": "true"}):
+            div.decompose()  # Completely removes the tag from the tree
+
     # Join up the lines of each container and split again
-    lyrics = "\n".join([c.get_text(separator="\n").strip() for c in lyrics_containers]).split("\n")
-    
-    return lyrics
+    # This gets rid of whitespace and splits newlines
+    raw_lyrics = "\n".join([ele.get_text(separator="\n").strip() for ele in lyrics_containers]).split("\n")
+
+    return raw_lyrics
