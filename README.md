@@ -46,23 +46,64 @@ All projects can be found in the [`projects`](projects) folder.
 
 ### [`compare_lyrics`](projects/compare_lyrics/)
 
-Compare the lyrics of songs by some of my current favourite artists. This uses data from [Genius](https://genius.com/) and results in several plots showing the top and bottom scoring artists for each metric, along with the distribution per metric.
+Compare the lyrics of songs by some of my current favourite artists. This uses data from [Genius](https://genius.com/) and results in several plots showing the top and bottom scoring artists for each metric, along with the distribution per metric. To create this I did remove some data points, such as non-English lyrics, so check out the coding for particulars.
 
 A comparison per song results in this plot:
 
 ![Lyrics comparison by song](assets/images/Compare_lyrics_metrics_by_song.png)
 
-Lyrically doom metal (Counting Hours, Saturnus) seems to have shorter lyrics than melodic death metal (Aether Realm, Shylmagoghnar). At the same time (or as an effect) the doom metal vocabulary is more complex as per the lexical diversity.
+Lyrically doom metal (Counting Hours, Saturnus) seems to have shorter lyrics than melodic death metal (Aether Realm, Shylmagoghnar). At the same time, or perhaps as an effect, the doom metal (Ocean of Grief, Mar de Grises) vocabulary is more complex, as it uses more different words as can be seen by the lexical diversity metric.
 
-Though typically metal is thought of to have an negative (-1.0) sentiment, some bands actually have an average positive (+1.0) sentiment.
+Though typically metal is thought of to have an negative (-1.0) sentiment, some bands actually have a definite average positive (+1.0) sentiment.
+
+---
 
 A comparison aggregated per artist results in this plot:
 
 ![Lyrics comparison by song](assets/images/Compare_lyrics_metrics_by_artist.png)
 
-Some artists' lyrical perspective (the use of pronoun _I_ (0.0) versus _we_ (1.0)) leans heavily towards the third person. Likewise, some artists have a highly directed (the use of pronoun _you_) lyricism. 
+Some artists' lyrical perspective (the use of pronoun _I_ (1.0) versus _we_ (0.0)) leans heavily towards the first person (Der Weg einer Freiheit, White Zombie). Likewise, some artists have a highly directed (the use of pronoun _you_) lyricism (Carcass, Destinity).
 
-Emotionally, metal is usually assumed to be angry or sad, though some bands seem to distinguish themselves with more joyful and less angry or sad lyrics.
+Emotionally, metal is usually assumed to be angry or sad, though some bands seem to distinguish themselves with more joyful (Omnium Gatherum) and less angry (Necrophagist) or sad lyrics (Fractal Gates).
+
+---
+
+[COMING SOON]
+
+Using the above metrics, combined with keyword analysis and more quantified emotions, results in a dataset that can be used to cluster artists and analyse artist similarity by lyrics. Clustering artists resuls in this plot:
+
+![clustering](assets/images/Clustering_artists_by_lyrics.png)
+
+In which several artists are highlighted with their nearest neighbours.
+
+...
+
+---
+
+Using the above metrics, it is possible to find similar artists by lyrics. After applying [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis) to the dataframe with lyrics metrics to acquire array `X` with an array of artists `artists`, this function finds the top N similar artists to Insomnium _lyrically_:
+
+```python
+find_similar_artists_by_lyrics('Insomnium', X, artists, top_n=10)
+```
+
+resulting in this list of tuples with artists and their Euclidean distance to Insomnium lyrics:
+
+```text
+[('Mors Principium Est', 0.486),
+ ('Swallow the Sun', 0.487),
+ ('Wintersun', 0.505),
+ ('Harakiri for the Sky', 0.544),
+ ('Heaven Shall Burn', 0.559),
+ ('Dark Tranquillity', 0.655),
+ ('Bloodred Hourglass', 0.668),
+ ('Soilwork', 0.675),
+ ('Edge of Sanity', 0.682),
+ ('Unearth', 0.731)]
+```
+
+, which feels about right when reading the lyrics of the found artists.
+
+---
 
 ### [`compare_platform_popularity`](projects/compare_platform_popularity/)
 
@@ -73,7 +114,6 @@ Compare the popularity of artists on music platforms [Last.fm](https://www.last.
 This illustrates that the number of Spotify followers and Last.fm listeners is a reasonable proxy for artist popularity for different genres, though Spotify popularity is not as good a proxy for either of them. Note that the number of Spotify _listeners_ is not easily scraped and is therefore not included in this analysis.
 
 ---
-
 
 ### [`compare_platform_similarity`](projects/compare_platform_popularity/)
 
