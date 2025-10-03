@@ -5,6 +5,7 @@
 # TODO: ruff
 # TODO: Write something about preprocessing
 # TODO: Move PRONOUNS and such to their own file
+# TODO: README, explain about splitting getting data, prep and vis/analyse
 
 # %% IMPORTS
 # Set paths
@@ -15,21 +16,17 @@ import sys
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(PROJECT_ROOT))
 
-from functools import cache
-import re
-
 from langdetect import DetectorFactory, detect
 from langdetect.lang_detect_exception import LangDetectException
 from nrclex import NRCLex
+import numpy as np
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
 from tqdm import tqdm
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import yake
 
+from functions.lyrics import clean_lyrics, count_pronouns, get_compound_sentiment
 from functions.scraping import get_artist_songs, get_genius_lyrics
-
-# %% INPUTS
-
 
 # %% CONFIGS
 genius_client_access_token_path = "../../data/credentials/genius_client_access_token.txt"
@@ -38,91 +35,27 @@ with open(genius_client_access_token_path, encoding="utf-8") as f:
     
 DetectorFactory.seed = 0
 
+
 # %% FUNCTIONS
-@cache
-def is_junk_line(line: str) -> bool:
-    """Determine if a line is junk.
-    
-    This is a heuristic based on a sample of Genius
-    lyrics. Junk lines are those that are not song lyrics, but are instead a count
-    of contributors, the statement about the lyrics being lyrics or a tag such as
-    [Chorus], [Verse 1], [Verse 2], etc.
+def get_top_tfidf_words(row: np.ndarray, top_n: int = 10, include_values: bool = False) -> list:
+    """Calculates the top n words in a TF-IDF vector.
 
     Args:
-        line (str): The line to check.
+        row (np.ndarray): A TF-IDF vector
+        top_n (int, optional): Number of top words to return. Defaults to 10.
+        include_values (bool, optional): If tfidf values should be included. Defaults to False.
 
     Returns:
-        bool: If the line is junk.
+        list: Top n words in the vector
     """    
-    junk_patterns = [
-        r"^\d+.*[Cc]ontributors{0,1}$",  # Contributors
-        r"^.*\sLyrics$",  # (song title) Lyrics
-        r"^\[.*\]$",  # [Chorus], [Verse 1], [Verse 2], ...
-    ]
-    junk_pattern = re.compile(r"|".join(junk_patterns))
-    return bool(junk_pattern.search(line.strip()))
-
-
-def get_compound_sentiment(sentence: str) -> dict:
-    """Get compound sentiment for a sentence.
+    row_array = row.toarray().flatten()
+    top_indices = np.argsort(row_array)[-top_n:][::-1]
+    if include_values:
+        return [(feature_names[i], row_array[i]) for i in top_indices]
+    else:
+        return [feature_names[i] for i in top_indices]
     
-    The compound score is a number between -1.0 and +1.0. The rough meanings of the 
-    scores are as follows:
-    -1.0 to -0.5	Strongly Negative
-    -0.5 to -0.1	Mildly Negative
-    -0.1 to +0.1	Neutral
-    +0.1 to +0.5	Mildly Positive
-    +0.5 to +1.0	Strongly Positive
     
-    Args:
-        sentence (str): The sentence to get compound sentiment for.
-
-    Returns:
-        dict: The compound sentiment for the sentence.
-    """
-    compound_sentiment = SentimentIntensityAnalyzer().polarity_scores(sentence)['compound']
-    return compound_sentiment
-
-
-# Define pronouns
-PRONOUNS = {
-    "first_person_sg": ["i", "me", "my", "mine", "myself",],
-    "first_person_pl": ["we", "us", "our", "ours", "ourselves",],
-    "second_person_sg_pl": ["you", "your", "yours", "yourself", "yourselves",],
-    "third_person_masc": ["he", "him", "his", "himself",],
-    "third_person_fem": ["she", "her", "hers", "herself",],
-    "third_person_neut": ["it", "its", "its", "itself",],
-    "third_person_ep_pl": ["they", "them", "their", "theirs", "themself", "themselves",],
-}
-
-# Create regex patterns for each pronoun
-PRONOUN_PATTERNS = {
-    pronoun_type: re.compile(r"\b({})\b".format("|".join(PRONOUNS[pronoun_type])))
-    for pronoun_type 
-    in PRONOUNS
-}
-
-
-def count_pronouns(text: str) -> dict:
-    """Count pronouns in a text.
-    
-    The text is converted to lower case before counting.
-    
-    Args:
-        text (str): The text to count pronouns in.
-
-    Returns:
-        dict: The count of pronouns in the text.
-    """
-    pronoun_count = {
-        pronoun_type: len(pattern.findall(text.lower()))
-        for pronoun_type, pattern
-        in PRONOUN_PATTERNS.items()
-    }
-    
-    return pronoun_count
-
-
 # %% GET DATA
 with open('../../data/Favourites.txt', encoding="utf-8") as file:
     artists = file.read().splitlines()
@@ -162,16 +95,11 @@ for song in tqdm(songs, desc="Getting Genius lyrics for songs"):
     url = song['lyrics_url']
     song['lyrics'] = get_genius_lyrics(url)
     
-# %% PREPARE DATA
+##### Filter out some stuff #####
+
 # Remove junk left over from scraping and combine into one text
 for song in tqdm(songs, desc="Cleaning lyrics"):
-    song['lyrics'] = ', '.join([
-        line 
-        for line 
-        in song['lyrics'] 
-        if not is_junk_line(line) 
-        and line.strip()
-        ])
+    song['lyrics'] = clean_lyrics(song['lyrics'])
     
 # Label language (ok, this is analysing, but I use it to remove some songs as well)
 for song in tqdm(songs, desc="Detecting language"):
@@ -186,7 +114,9 @@ for song in tqdm(songs, desc="Detecting language"):
 songs = [song for song in songs if song['lyrics'] and song['language'] == "en"]
 
 # %% ANALYSE DATA
+
 ##### Analyse lyrics per song #####
+
 for song in tqdm(songs, desc="Analysing lyrics for each song"):
     # Lyrics length
     song['lyrics_length'] = len(song['lyrics'].split())
@@ -212,18 +142,16 @@ for song in tqdm(songs, desc="Analysing lyrics for each song"):
 
 songs_df = pd.DataFrame(songs)
 
-# Normalise lyrics length to be a number between 0 and 1
-songs_df['lyrics_length_norm'] = songs_df['lyrics_length'] / songs_df['lyrics_length'].max()
-
 ##### Analyse per artist #####
+
+print("Analysing aggregated data per artist...")
 # Aggregate
 artist_agg_df = (
     songs_df
     .groupby('artist')
     .agg({
-        'lyrics': lambda x: ' '.join(x),
+        'lyrics': ' | '.join,
         'lyrics_length': 'mean',
-        'lyrics_length_norm': 'mean',
         'lexical_diversity': 'mean',
         'perspective': 'mean',
         'directness': 'mean',
@@ -231,6 +159,12 @@ artist_agg_df = (
     })
     .reset_index()
 )
+
+# Top words for artist using TF-IDF
+vectorizer = TfidfVectorizer(stop_words='english')  # Rely on built-in preprocessing
+tfidf_matrix = vectorizer.fit_transform(artist_agg_df['lyrics'])
+feature_names = vectorizer.get_feature_names_out()
+artist_agg_df['top_words'] = [get_top_tfidf_words(tfidf_matrix[i]) for i in range(tfidf_matrix.shape[0])]
 
 # Keywords
 kw_extractor = yake.KeywordExtractor(lan="en", n=1, top=10)
@@ -241,7 +175,6 @@ artist_agg_df['keywords'] = artist_agg_df['lyrics'].apply(
 # Emotion
 artist_agg_df['emotion_profile'] = artist_agg_df['lyrics'].apply(lambda x: NRCLex(x).affect_frequencies)
 
-# %%
 # Explode keywords into one-hot-encoded columns
 emotion_df = artist_agg_df['emotion_profile'].apply(pd.Series)
 emotion_df = emotion_df.add_prefix('emotion_')
@@ -254,17 +187,9 @@ keywords_df = keywords_df.add_prefix('keyword_')
 keywords_df = keywords_df.fillna(0)
 artist_agg_df = pd.concat([artist_agg_df.drop(columns=['keywords']), keywords_df], axis=1)
 
-# ! TODO: TF-IDF (signature vocabulary)
-
-# %% VISUALISE DATA
-# Graphs with dimensions
-# Network with some generalised similarity
-    
-# %% PRUTS
-artist_agg_df
-
-
-# %%
-
+# %% SAVE DATA
+# Save as pickle
+songs_df.to_pickle('../../data/lyrics_analysis_songs_df.pickle')
+artist_agg_df.to_pickle('../../data/lyrics_analysis_artist_agg_df.pickle')
 
 # %%
