@@ -22,6 +22,7 @@ Functions query several endpoints, check out their definitions to figure out whi
 
 To get API keys for endpoints, you can use the following links:
 
+- [Genius](https://docs.genius.com/)
 - [Last.fm](https://www.last.fm/api/authentication)
 - [Musicbrainz](https://musicbrainz.org/doc/MusicBrainz_API), though an API key is not required
 - [Setlist.fm](https://api.setlist.fm/docs/1.0/index.html)
@@ -33,12 +34,35 @@ When working through the scripts, you will find out where to put .txt files with
 
 Other sources of data for projects in this repository:
 
-- [concerts-metal.com](https://en.concerts-metal.com/), which is scraped using Selenium
-- [Encyclopaedia Metallum](https://www.metal-archives.com/), which is scraped using Selenium
+- [concerts-metal.com](https://en.concerts-metal.com/), which is scraped using `Selenium`
+- [Encyclopaedia Metallum](https://www.metal-archives.com/), which is scraped using `Selenium`
+- [Genius](https://genius.com/), which is also queried using endpoins, but also scraped using `requests` and `BeautifulSoup`
 
 ## Projects
 
-All projects are in the [`projects`](projects) folder.
+All projects can be found in the [`projects`](projects) folder.
+
+---
+
+### [`compare_lyrics`](projects/compare_lyrics/)
+
+Compare the lyrics of songs by some of my current favourite artists. This uses data from [Genius](https://genius.com/) and results in several plots showing the top and bottom scoring artists for each metric, along with the distribution per metric.
+
+A comparison per song results in this plot:
+
+![Lyrics comparison by song](assets/images/Compare_lyrics_metrics_by_song.png)
+
+Lyrically doom metal (Counting Hours, Saturnus) seems to have shorter lyrics than melodic death metal (Aether Realm, Shylmagoghnar). At the same time (or as an effect) the doom metal vocabulary is more complex as per the lexical diversity.
+
+Though typically metal is thought of to have an negative (-1.0) sentiment, some bands actually have an average positive (+1.0) sentiment.
+
+A comparison aggregated per artist results in this plot:
+
+![Lyrics comparison by song](assets/images/Compare_lyrics_metrics_by_artist.png)
+
+Some artists' lyrical perspective (the use of pronoun _I_ (0.0) versus _we_ (1.0)) leans heavily towards the third person. Likewise, some artists have a highly directed (the use of pronoun _you_) lyricism. 
+
+Emotionally, metal is usually assumed to be angry or sad, though some bands seem to distinguish themselves with more joyful and less angry or sad lyrics.
 
 ### [`compare_platform_popularity`](projects/compare_platform_popularity/)
 
