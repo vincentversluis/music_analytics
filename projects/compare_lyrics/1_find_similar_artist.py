@@ -10,7 +10,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 
 # %% FUNCTIONS
-def find_similar_artists(artist: str, X: np.ndarray, artists: np.ndarray, 
+def find_similar_artists_by_lyrics(artist: str, X: np.ndarray, artists: np.ndarray, 
                          top_n: int | None = None) -> list:
     """Find similar artists to a given artist using KNN.
 
@@ -76,6 +76,6 @@ X = pca_df.drop(columns='artist').values
 artists = pca_df['artist'].values
 
 # Use the function
-find_similar_artists('Insomnium', X, artists, top_n=None)
+find_similar_artists_by_lyrics('Insomnium', X, artists, top_n=None)
 
 # %%
