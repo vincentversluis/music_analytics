@@ -11,6 +11,7 @@ import sys
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(PROJECT_ROOT))
 
+from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -83,7 +84,15 @@ for i, col in enumerate(song_columns):
         ax.scatter(mean_val, y, color='black', s=60, zorder=3)
 
     # Axis styling
-    ax.set_title(col.replace('_', ' ').capitalize())
+    # Title
+    match col:
+        case 'lyrics_length':
+            ax.set_title('Lyrics length (total words)')
+        case 'lexical_diversity':
+            ax.set_title('Fraction of unique words')
+        case 'sentiment':
+            ax.set_title('Sentiment (negative (-1.0) to positive (+1.0))')
+
     if col == 'sentiment':
         ax.set_xlim(left=-1)
     else:
@@ -97,6 +106,25 @@ for i, col in enumerate(song_columns):
 # Finish up
 fig.text(0.5, 1.05, "Song-level distributions per artist: Lyrical complexity and sentiment",
          ha='center', va='top', fontsize=14, weight='bold')
+
+# Define custom legend handles
+legend_elements = [
+    Line2D([0], [0], marker='o', color='grey', alpha=0.2, linestyle='None',
+           markersize=8, label='Unique song metric'),
+    Line2D([0], [0], marker='o', color='black', linestyle='None',
+           markersize=8, label='Artist mean')
+]
+
+fig.legend(
+    handles=legend_elements,
+    loc='lower center',
+    ncol=2,
+    frameon=False,
+    bbox_to_anchor=(0.5, -0.05)  # x=0.5 centers it, y=-0.05 pushes it lower
+)
+
+fig.subplots_adjust(bottom=0.25)  # increase to make room for the legend
+
 plt.tight_layout()
 plt.show()
 
@@ -143,15 +171,27 @@ for i, col in enumerate(emotion_columns):
         ax.scatter(row[col], y, color='black', edgecolor='white', s=80, zorder=2)
 
     # Axis styling
-    ax.set_title(col.replace('emotion_', '').capitalize())
-    ax.set_xlim(left=0, right=col_max*1.05)
+    match col:
+        case 'perspective':
+            ax.set_title('Perspective (use of $\it{we}$ (0.0) vs $\it{you}$ (1.0))')
+        case 'directness':
+            ax.set_title('Directedness (use of $\it{you}$)')
+        case 'emotion_joy':
+            ax.set_title('Joy')
+        case 'emotion_anger':
+            ax.set_title('Anger')
+        case 'emotion_sadness':
+            ax.set_title('Sadness')
+    
+    # ax.set_title(col.replace('emotion_', '').capitalize())
+    ax.set_xlim(left=0, right=col_max * 1.05)
     ax.set_yticks([])
     ax.set_yticklabels([])
     for artist, y in artist_positions.items():
         ax.text(x=0, y=y, s=artist, va='center', ha='right', fontsize=9)
     ax.invert_yaxis()
     
-fig.text(0.5, 1.05, "Artist-level profiles: Use of pronouns, and emotional expression",
+fig.text(0.5, 1.05, "Artist-level profiles: Lyrical use of pronouns and emotional expression",
          ha='center', va='top', fontsize=14, weight='bold')
 plt.tight_layout()
 plt.show()
