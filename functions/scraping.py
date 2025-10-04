@@ -270,10 +270,13 @@ def get_setlists(artist: str, setlistfm_api_key: str, page: int = 1) -> dict:
     sleep(1.5)  # Sleep to avoid hammering the server
     return response.json()
 
-def get_artist_songs(artist: str, client_access_token: str, per_page: int = 20, page: int = 1, **kwargs) -> dict:
+
+def get_artist_songs(
+    artist: str, client_access_token: str, per_page: int = 20, page: int = 1, **kwargs
+) -> dict:
     """Get songs and url to lyrics for an artist from Genius.
-    
-    NOTE: If Genius is dicking around, this might be because of it detecting a VPN. If 
+
+    NOTE: If Genius is dicking around, this might be because of it detecting a VPN. If
     so, turn off the VPN and try again.
 
     Args:
@@ -284,11 +287,11 @@ def get_artist_songs(artist: str, client_access_token: str, per_page: int = 20, 
 
     Returns:
         dict: A collection of information about the songs by the artist
-    """    
+    """
     # Set correct contraints on endpoint
     per_page = min(per_page, 20)
     page = max(page, 1)
-    
+
     # Get Genius hits
     genius_search_url = f"{GENIUS_ROOT}search?q={artist}&per_page={per_page}&page={page}&access_token={client_access_token}"
     resp = fetch(genius_search_url, **kwargs)
@@ -297,8 +300,8 @@ def get_artist_songs(artist: str, client_access_token: str, per_page: int = 20, 
 
 def get_genius_lyrics(url: str, **kwargs) -> list:
     """Get lyrics from a Genius song page.
-    
-    NOTE: If Genius is dicking around, this might be because of it detecting a VPN. If 
+
+    NOTE: If Genius is dicking around, this might be because of it detecting a VPN. If
     so, turn off the VPN and try again.
 
     This is a literal scrape of the lyrics page and will likely include some junk, such
@@ -309,7 +312,7 @@ def get_genius_lyrics(url: str, **kwargs) -> list:
 
     Returns:
         list: Each line of the lyrics, which may include some junk.
-    """   
+    """
     response = fetch(url, **kwargs)
     soup = BeautifulSoup(response, "html.parser")
 
@@ -318,11 +321,15 @@ def get_genius_lyrics(url: str, **kwargs) -> list:
 
     # Remove divs with annotations
     for container in lyrics_containers:
-        for div in container.find_all("div", attrs={"data-exclude-from-selection": "true"}):
+        for div in container.find_all(
+            "div", attrs={"data-exclude-from-selection": "true"}
+        ):
             div.decompose()  # Completely removes the tag from the tree
 
     # Join up the lines of each container and split again
     # This gets rid of whitespace and splits newlines
-    raw_lyrics = "\n".join([ele.get_text(separator="\n").strip() for ele in lyrics_containers]).split("\n")
+    raw_lyrics = "\n".join([
+        ele.get_text(separator="\n").strip() for ele in lyrics_containers
+    ]).split("\n")
 
     return raw_lyrics

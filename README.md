@@ -8,7 +8,7 @@ This is mostly me playing around with data pertaining to something I really enjo
 2) visually display results and highlighting differences and similarities effictively and
 3) gain some deeper understanding of the music I love.
 
-Some projects are small and result in just a plot, whilst others gave the opportunity to analyse one dataset in multiple ways and even allowed some more in-depth analysis and limited machine learning.
+Some projects are small and result in just a plot, whilst others gave the opportunity to analyse one dataset in multiple ways and even allowed some more in-depth analysis.
 
 On the whole the results feel about right (according to my own intuition), though reducing the songs to metrics does not do justice to the artistry behind them, so do give some a little listen as well.
 
@@ -77,18 +77,6 @@ A comparison aggregated per artist results in this plot:
 Some artists' lyrical perspective (the use of pronoun _I_ (1.0) versus _we_ (0.0)) leans heavily towards the first person (_Der Weg einer Freiheit_, _White Zombie_). Likewise, some artists have a highly directed (the use of pronoun _you_) lyricism (_Carcass_, _Destinity_), whereas other do not at all (_Nephylim_, _Be'lakor_).
 
 Emotionally, metal is usually assumed to be angry or sad, though some bands seem to distinguish themselves with relatively more joyful (_Omnium Gatherum_) and less angry (_Necrophagist_) or sad lyrics (_Fractal Gates_).
-
----
-
-[COMING SOON]
-
-Using the above metrics, combined with keyword analysis and more quantified emotions, results in a dataset that can be used to cluster artists and analyse artist similarity by lyrics. Clustering artists resuls in this plot:
-
-![clustering](assets/images/Clustering_artists_by_lyrics.png)
-
-In which several artists are highlighted with their nearest neighbours.
-
-...
 
 ---
 

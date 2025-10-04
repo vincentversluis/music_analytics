@@ -1,11 +1,4 @@
 # %% HEADER
-# TODO: Comments
-# TODO: Docstrings
-# TODO: Use fetch instead of requests
-# TODO: ruff
-# TODO: Write something about preprocessing
-# TODO: Move PRONOUNS and such to their own file
-# TODO: README, explain about splitting getting data, prep and vis/analyse
 
 # %% IMPORTS
 # Set paths
@@ -29,15 +22,19 @@ from functions.lyrics import clean_lyrics, count_pronouns, get_compound_sentimen
 from functions.scraping import get_artist_songs, get_genius_lyrics
 
 # %% CONFIGS
-genius_client_access_token_path = "../../data/credentials/genius_client_access_token.txt"
+genius_client_access_token_path = (
+    "../../data/credentials/genius_client_access_token.txt"
+)
 with open(genius_client_access_token_path, encoding="utf-8") as f:
     genius_client_access_token = f.read()
-    
+
 DetectorFactory.seed = 0
 
 
 # %% FUNCTIONS
-def get_top_tfidf_words(row: np.ndarray, top_n: int = 10, include_values: bool = False) -> list:
+def get_top_tfidf_words(
+    row: np.ndarray, top_n: int = 10, include_values: bool = False
+) -> list:
     """Calculates the top n words in a TF-IDF vector.
 
     Args:
@@ -47,17 +44,17 @@ def get_top_tfidf_words(row: np.ndarray, top_n: int = 10, include_values: bool =
 
     Returns:
         list: Top n words in the vector
-    """    
+    """
     row_array = row.toarray().flatten()
     top_indices = np.argsort(row_array)[-top_n:][::-1]
     if include_values:
         return [(feature_names[i], row_array[i]) for i in top_indices]
     else:
         return [feature_names[i] for i in top_indices]
-    
-    
+
+
 # %% GET DATA
-with open('../../data/Favourites.txt', encoding="utf-8") as file:
+with open("../../data/Favourites.txt", encoding="utf-8") as file:
     artists = file.read().splitlines()
 
 # Collect songs for artists
@@ -68,50 +65,49 @@ for artist in tqdm(artists, desc="Getting Genius references to songs for artists
     while True:
         # Get Genius hits for page (uses cache if available)
         resp = get_artist_songs(
-            artist=artist, 
-            client_access_token=genius_client_access_token, 
-            page=page)
+            artist=artist, client_access_token=genius_client_access_token, page=page
+        )
 
         # Test if no more hits
-        if not resp['response']['hits']:
+        if not resp["response"]["hits"]:
             break
 
         # Collect song infos
-        for song in resp['response']['hits']:
+        for song in resp["response"]["hits"]:
             # Only collect if artist is primary artist
-            if not artist.lower() == song['result']['primary_artist']['name'].lower():
+            if not artist.lower() == song["result"]["primary_artist"]["name"].lower():
                 continue
             songs.append({
                 "artist": artist,
-                "credited_artists": song['result']['artist_names'],
-                "title": song['result']['title'],
-                "lyrics_url": f"https://genius.com{song['result']['path']}"
+                "credited_artists": song["result"]["artist_names"],
+                "title": song["result"]["title"],
+                "lyrics_url": f"https://genius.com{song['result']['path']}",
             })
-            
+
         page += 1
 
 # Get lyrics (uses cache if available)
 for song in tqdm(songs, desc="Getting Genius lyrics for songs"):
-    url = song['lyrics_url']
-    song['lyrics'] = get_genius_lyrics(url)
-    
+    url = song["lyrics_url"]
+    song["lyrics"] = get_genius_lyrics(url)
+
 ##### Filter out some stuff #####
 
 # Remove junk left over from scraping and combine into one text
 for song in tqdm(songs, desc="Cleaning lyrics"):
-    song['lyrics'] = clean_lyrics(song['lyrics'])
-    
+    song["lyrics"] = clean_lyrics(song["lyrics"])
+
 # Label language (ok, this is analysing, but I use it to remove some songs as well)
 for song in tqdm(songs, desc="Detecting language"):
     # Label language
     try:
-        language = detect(song['lyrics'])
+        language = detect(song["lyrics"])
     except LangDetectException:
         language = "??"
-    song['language'] = language
-    
+    song["language"] = language
+
 # Remove songs with no lyrics or no English lyrics (entschuldigung, Heaven Shall Burn)
-songs = [song for song in songs if song['lyrics'] and song['language'] == "en"]
+songs = [song for song in songs if song["lyrics"] and song["language"] == "en"]
 
 # %% ANALYSE DATA
 
@@ -119,26 +115,32 @@ songs = [song for song in songs if song['lyrics'] and song['language'] == "en"]
 
 for song in tqdm(songs, desc="Analysing lyrics for each song"):
     # Lyrics length
-    song['lyrics_length'] = len(song['lyrics'].split())
-    
+    song["lyrics_length"] = len(song["lyrics"].split())
+
     # Lexical diversity - ratio of unique words to total words
-    song['lexical_diversity'] = len(set(song['lyrics'].split())) / len(song['lyrics'].split())
-    
+    song["lexical_diversity"] = len(set(song["lyrics"].split())) / len(
+        song["lyrics"].split()
+    )
+
     # Pronoun usage - add each key directly to the song datas
-    pronoun_count = count_pronouns(song['lyrics'])
+    pronoun_count = count_pronouns(song["lyrics"])
     # Calculate perspective - share of first person SINGULAR pronouns vs all first person pronouns
     try:
-        song['perspective'] = pronoun_count['first_person_sg'] / (pronoun_count['first_person_sg'] + pronoun_count['first_person_pl'])
+        song["perspective"] = pronoun_count["first_person_sg"] / (
+            pronoun_count["first_person_sg"] + pronoun_count["first_person_pl"]
+        )
     except ZeroDivisionError:
-        song['perspective'] = 0
+        song["perspective"] = 0
     # Calculate directness - share of second person pronouns vs all other pronouns
     try:
-        song['directness'] = pronoun_count['second_person_sg_pl'] / sum(pronoun_count.values())
+        song["directness"] = pronoun_count["second_person_sg_pl"] / sum(
+            pronoun_count.values()
+        )
     except ZeroDivisionError:
-        song['directness'] = 0
-    
+        song["directness"] = 0
+
     # Sentiment
-    song['sentiment'] = get_compound_sentiment(song['lyrics'])
+    song["sentiment"] = get_compound_sentiment(song["lyrics"])
 
 songs_df = pd.DataFrame(songs)
 
@@ -147,49 +149,56 @@ songs_df = pd.DataFrame(songs)
 print("Analysing aggregated data per artist...")
 # Aggregate
 artist_agg_df = (
-    songs_df
-    .groupby('artist')
+    songs_df.groupby("artist")
     .agg({
-        'lyrics': ' | '.join,
-        'lyrics_length': 'mean',
-        'lexical_diversity': 'mean',
-        'perspective': 'mean',
-        'directness': 'mean',
-        'sentiment': 'mean'
+        "lyrics": " | ".join,
+        "lyrics_length": "mean",
+        "lexical_diversity": "mean",
+        "perspective": "mean",
+        "directness": "mean",
+        "sentiment": "mean",
     })
     .reset_index()
 )
 
 # Top words for artist using TF-IDF
-vectorizer = TfidfVectorizer(stop_words='english')  # Rely on built-in preprocessing
-tfidf_matrix = vectorizer.fit_transform(artist_agg_df['lyrics'])
+vectorizer = TfidfVectorizer(stop_words="english")  # Rely on built-in preprocessing
+tfidf_matrix = vectorizer.fit_transform(artist_agg_df["lyrics"])
 feature_names = vectorizer.get_feature_names_out()
-artist_agg_df['top_words'] = [get_top_tfidf_words(tfidf_matrix[i]) for i in range(tfidf_matrix.shape[0])]
+artist_agg_df["top_words"] = [
+    get_top_tfidf_words(tfidf_matrix[i]) for i in range(tfidf_matrix.shape[0])
+]
 
 # Keywords
 kw_extractor = yake.KeywordExtractor(lan="en", n=1, top=10)
-artist_agg_df['keywords'] = artist_agg_df['lyrics'].apply(
+artist_agg_df["keywords"] = artist_agg_df["lyrics"].apply(
     lambda x: {kw: score for kw, score in kw_extractor.extract_keywords(x)}
 )
 
 # Emotion
-artist_agg_df['emotion_profile'] = artist_agg_df['lyrics'].apply(lambda x: NRCLex(x).affect_frequencies)
+artist_agg_df["emotion_profile"] = artist_agg_df["lyrics"].apply(
+    lambda x: NRCLex(x).affect_frequencies
+)
 
 # Explode keywords into one-hot-encoded columns
-emotion_df = artist_agg_df['emotion_profile'].apply(pd.Series)
-emotion_df = emotion_df.add_prefix('emotion_')
+emotion_df = artist_agg_df["emotion_profile"].apply(pd.Series)
+emotion_df = emotion_df.add_prefix("emotion_")
 emotion_df = emotion_df.fillna(0)
-artist_agg_df = pd.concat([artist_agg_df.drop(columns=['emotion_profile']), emotion_df], axis=1)
+artist_agg_df = pd.concat(
+    [artist_agg_df.drop(columns=["emotion_profile"]), emotion_df], axis=1
+)
 
 # Explode emotion profile into columns with profile values
-keywords_df = artist_agg_df['keywords'].apply(pd.Series)
-keywords_df = keywords_df.add_prefix('keyword_')
+keywords_df = artist_agg_df["keywords"].apply(pd.Series)
+keywords_df = keywords_df.add_prefix("keyword_")
 keywords_df = keywords_df.fillna(0)
-artist_agg_df = pd.concat([artist_agg_df.drop(columns=['keywords']), keywords_df], axis=1)
+artist_agg_df = pd.concat(
+    [artist_agg_df.drop(columns=["keywords"]), keywords_df], axis=1
+)
 
 # %% SAVE DATA
 # Save as pickle
-songs_df.to_pickle('../../data/lyrics_analysis_songs_df.pickle')
-artist_agg_df.to_pickle('../../data/lyrics_analysis_artist_agg_df.pickle')
+songs_df.to_pickle("../../data/lyrics_analysis_songs_df.pickle")
+artist_agg_df.to_pickle("../../data/lyrics_analysis_artist_agg_df.pickle")
 
 # %%
