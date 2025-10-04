@@ -1,5 +1,5 @@
 # %% HEADER
-# Find similar artists to a given artist using KNN
+# Find similar artists to a given artist using Euclidian distance after scaling and PCA
 
 # %% IMPORTS
 import numpy as np
@@ -8,22 +8,25 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import pairwise_distances
 from sklearn.preprocessing import MinMaxScaler
 
-# %% CONFIGS
-
 
 # %% FUNCTIONS
-def find_similar_artists(artist: str, X: np.ndarray, artists: np.ndarray, top_n: int) -> list:
+def find_similar_artists(artist: str, X: np.ndarray, artists: np.ndarray, 
+                         top_n: int | None = None) -> list:
     """Find similar artists to a given artist using KNN.
 
     Args:
         artist (str): The artist to find similar artists for.
         X (np.ndarray): The PCA-transformed features.
         artists (np.ndarray): The artist labels.
-        N (int): The number of similar artists to find.
+        top_n (int): The number of similar artists to find. Defaults to None, which means all.
 
     Returns:
         list: The top N similar artists to the given artist.
     """
+    # Set top_n to all if not specified
+    if top_n is None:
+        top_n = len(artists) - 1  # Exclude self-match
+        
     target_index = np.where(artists == artist)[0][0]
     target_vector = X[target_index].reshape(1, -1)
 
@@ -73,6 +76,6 @@ X = pca_df.drop(columns='artist').values
 artists = pca_df['artist'].values
 
 # Use the function
-find_similar_artists('Insomnium', X, artists, top_n=10)
+find_similar_artists('Insomnium', X, artists, top_n=None)
 
 # %%
