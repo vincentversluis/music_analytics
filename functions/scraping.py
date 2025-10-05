@@ -7,6 +7,7 @@ import base64
 from functools import cache
 from time import sleep
 
+from bs4 import BeautifulSoup
 import requests
 
 from .dbfuncs import db_cache
@@ -15,6 +16,7 @@ from .utils import get_parsed_date, ttl_cache
 # %% CONSTANTS
 MB_ROOT = "https://musicbrainz.org/ws/2/"
 LASTFM_ROOT = "https://ws.audioscrobbler.com/2.0/"
+GENIUS_ROOT = "http://api.genius.com/"
 
 
 # %% FUNCTIONS
@@ -267,3 +269,67 @@ def get_setlists(artist: str, setlistfm_api_key: str, page: int = 1) -> dict:
     response = requests.get(url, headers=headers)
     sleep(1.5)  # Sleep to avoid hammering the server
     return response.json()
+
+
+def get_artist_songs(
+    artist: str, client_access_token: str, per_page: int = 20, page: int = 1, **kwargs
+) -> dict:
+    """Get songs and url to lyrics for an artist from Genius.
+
+    NOTE: If Genius is dicking around, this might be because of it detecting a VPN. If
+    so, turn off the VPN and try again.
+
+    Args:
+        artist (str): The artist to get songs for.
+        client_access_token (str): The client access token.
+        per_page (int, optional): The number of hits to get per page. Defaults and limited to 20.
+        page (int, optional): The page to get. Defaults and minimised to 1.
+
+    Returns:
+        dict: A collection of information about the songs by the artist
+    """
+    # Set correct contraints on endpoint
+    per_page = min(per_page, 20)
+    page = max(page, 1)
+
+    # Get Genius hits
+    genius_search_url = f"{GENIUS_ROOT}search?q={artist}&per_page={per_page}&page={page}&access_token={client_access_token}"
+    resp = fetch(genius_search_url, **kwargs)
+    return resp
+
+
+def get_genius_lyrics(url: str, **kwargs) -> list:
+    """Get lyrics from a Genius song page.
+
+    NOTE: If Genius is dicking around, this might be because of it detecting a VPN. If
+    so, turn off the VPN and try again.
+
+    This is a literal scrape of the lyrics page and will likely include some junk, such
+    as a reference to the number of contributors, verse tags and whitespace. But it works
+
+    Args:
+        url (str): The url of the Genius song page.
+
+    Returns:
+        list: Each line of the lyrics, which may include some junk.
+    """
+    response = fetch(url, **kwargs)
+    soup = BeautifulSoup(response, "html.parser")
+
+    # Get containers with lyrics
+    lyrics_containers = soup.find_all("div", attrs={"data-lyrics-container": "true"})
+
+    # Remove divs with annotations
+    for container in lyrics_containers:
+        for div in container.find_all(
+            "div", attrs={"data-exclude-from-selection": "true"}
+        ):
+            div.decompose()  # Completely removes the tag from the tree
+
+    # Join up the lines of each container and split again
+    # This gets rid of whitespace and splits newlines
+    raw_lyrics = "\n".join([
+        ele.get_text(separator="\n").strip() for ele in lyrics_containers
+    ]).split("\n")
+
+    return raw_lyrics
