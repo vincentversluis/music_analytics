@@ -144,13 +144,49 @@ This illustrates that the different platforms seem to have consensus on the top 
 
 ### [`match_festivals`](projects/match_festivals/)
 
-(coming soon)
+Analyse __metal__ festival data from [concerts-metal.com](https://en.concerts-metal.com/festivals.html) for __metal__ festivals held between 2022 and 2025 to find which festivals are a good match for a specific band, using [market basket analysis](https://en.wikipedia.org/wiki/Affinity_analysis). The result can be used by artists to find a good festival to aim to perform at.
 
-Analyse festival data from [concerts-metal.com](https://en.concerts-metal.com/festivals.html) and find which festivals are a good match for a specific band, using [market basket analysis](https://en.wikipedia.org/wiki/Affinity_analysis).
+Althouth the data is not complete, as concerts-metal.com is a crowdsourced website, this does list many festivals (also smaller ones) and on spot checks seems to pretty much always include the headliners.
 
-...
+---
 
-The result can be used by artists to find a good festival to aim to perform at.
+Besides using the data for market basket analysis, let's visually inspect the scraped data first to see which artists performed at the same festivals:
+
+![Top lineup sharing artists](assets/images/Festivals_top_lineup_sharing.png)
+
+This makes sense, as it shows many lineup sharing between artists that have been doing long festival seasons between 2022 and 2025.
+
+---
+
+Let's also filter for my favourite subgenre:
+
+![Top melodeath artists at festivals](assets/images/Festival_top_performing_melodeath.png)
+
+Besides possible disputes due to genre labeling (blame the source if you want to be like that), the usual suspects (_In Flames_, _Dark Tranquillity_, _Carcass_) are indeed the top performing melodic death metal bands at festivals.
+
+---
+
+In market basket analysis we are interested in items (bands) appearing in the same basket (festival lineup), so let's look at artists that share a lineup, with at least one of the bands being in the melodic death metal subgenre:
+
+![Top lineup melodeath sharing artists](assets/images/Festivals_top_melodeath_lineup_sharing.png)
+
+Although I expected more shared lineups between artists that are both in the melodic death metal subgenre (or adjacent), this typically seems to not be the case. The top lineup sharers are in the line of expectation, though, as _Slipknot_, _Exodus_ and _Spiritbox_ had long festival tours recently.
+
+---
+
+We can also look at the artists that share a lineup with a specific melodic death metal artist, for example _Insomnium_:
+
+![Top ](assets/images/Festivals_top_lineup_sharing_Insomnium.png)
+
+Although the top artist (_Dark Tranquillity_) shares the subgenre, the subgenres of other artists seems to be all over the place, though some are at least adjacent (_Eluveitie_, _Amorphis_) and have done club tours together.
+
+---
+
+(Market basket analysis)
+
+[image]
+
+(blabla)
 
 ---
 
