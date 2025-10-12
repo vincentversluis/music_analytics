@@ -144,13 +144,94 @@ This illustrates that the different platforms seem to have consensus on the top 
 
 ### [`match_festivals`](projects/match_festivals/)
 
-(coming soon)
+Analyse __metal__ festival data from [concerts-metal.com](https://en.concerts-metal.com/festivals.html) for __metal__ festivals held between 2022 and 2025 to find which festivals are a good match for a specific band, using [market basket analysis](https://en.wikipedia.org/wiki/Affinity_analysis). The result can be used by artists to find a good festival to aim to perform at.
 
-Analyse festival data from [concerts-metal.com](https://en.concerts-metal.com/festivals.html) and find which festivals are a good match for a specific band, using [market basket analysis](https://en.wikipedia.org/wiki/Affinity_analysis).
+Althouth the data is not complete, as concerts-metal.com is a crowdsourced website, this does list many festivals (also smaller ones) and on spot checks seems to pretty much always include the headliners.
 
+---
+
+Besides using the data for market basket analysis, let's visually inspect the scraped data first to see which artists performed at the same festivals:
+
+![Top lineup sharing artists](assets/images/Festivals_top_lineup_sharing.png)
+
+This makes sense, as it shows many lineup sharing between artists that have been doing long festival seasons between 2022 and 2025.
+
+---
+
+Let's also filter for my favourite subgenre:
+
+![Top melodeath artists at festivals](assets/images/Festival_top_performing_melodeath.png)
+
+Besides possible disputes due to genre labeling (blame the source if you want to be like that), the usual suspects (_In Flames_, _Dark Tranquillity_, _Carcass_) are indeed the top performing melodic death metal bands at festivals.
+
+---
+
+In market basket analysis we are interested in items (bands) appearing in the same basket (festival lineup), so let's look at artists that share a lineup, with at least one of the bands being in the melodic death metal subgenre:
+
+![Top lineup melodeath sharing artists](assets/images/Festivals_top_melodeath_lineup_sharing.png)
+
+Although I expected more shared lineups between artists that are both in the melodic death metal subgenre (or adjacent), this typically seems to not be the case. The top lineup sharers are in the line of expectation, though, as _Slipknot_, _Exodus_ and _Spiritbox_ had long festival tours recently.
+
+---
+
+We can also look at the artists that share a lineup with a specific melodic death metal artist, for example _Insomnium_:
+
+![Top lineup sharing with Insomnium](assets/images/Festivals_top_lineup_sharing_Insomnium.png)
+
+Although the top artist (_Dark Tranquillity_) shares the subgenre, the subgenres of other artists seems to be all over the place, though some are at least adjacent (_Eluveitie_, _Amorphis_) and have done club tours together.
+
+---
+
+A [market basket analysis](https://en.wikipedia.org/wiki/Affinity_analysis) gives a better idea of _statistically significant_ co-appearances at festivals, rather than just counting the number of times an artist appears at a festival. This is done through mining a set of association rules using `mlxtend`'s [fpgrowth](https://mlxtend.readthedocs.io/en/stable/generated/mlxtend.frequent_patterns.fpgrowth.html) and [association_rules](https://mlxtend.readthedocs.io/en/stable/generated/mlxtend.frequent_patterns.association_rules.html) functions. See the [the project's coding](projects/match_festivals/) for more details on the use of the `FestivalRecommender` class.
+
+The coding is wraped into the `FestivalRecommender` class, which abstracts away the prep and mining steps to the simple function call `mine_rules(festivals)`, where festivals is a simple dict with the lineups of each festival. The call `recommend_festivals('The Halo Effect')` returns a similarity score per festival for the band _The Halo Effect_, based on the mined rules. The scores with an input of festivals between 2022 and 2025 look like this:
+
+```text
+Alcatraz Metal Festival: 9.25
+Resurrection Fest: 6.00
+Sun And Thunder Festival: 6.00
+Hellfest: 5.50
+Mystic Festival: 5.25
+Bloodstock Open Air: 5.00
+Bangers Open Air: 5.00
+South of Heaven Open Air: 5.00
+Headbangers' Weekend: 5.00
+Dynamo Metal Fest: 4.50
+```
+
+These represent festivals _The Halo Effect_ has __not__ yet played at, but artists that have played on the same festival as _The Halo Effect_ have. A higher score means more co-appearing artists at other festivals have appeared at the same festival, so _The Halo Effect_ would be a good fit for the festival, based on that fact. Note that this only includes data from 2022 to 2025, so the artist might have performed at the suggested festival before that.
+
+---
+
+Using the mined rules for co-appearances, we can also look at which artists could be _expected_ to appear at the same festivals and have done so very frequent, possibly resulting in a statistically significant network of overlapping artists. The `plot_similarity_graph` function does this by calculating the [Jaccard similarity](https://en.wikipedia.org/wiki/Jaccard_index) between the top N most performing artists and plotting a graph like this:
+
+![Top artists co-appearing at festivals](assets/images/Coappearing_artists_Jaccard.png)
+
+Artists in the top N that result in isolated nodes are removed from the graph.
+
+Although this does not really feature many of the artists I am musically interested in, the plot does show that the mined rules make sense, as links hinted at in the matrix above are present, many of the artists are headliners and the biggest names are in the centre of the network.
+
+Interestingly (to me at least), pretty much all edges are connecting artists in different subgenres, which confirms that festivals attempt to book headliners from different subgenres, to accommodate for different tastes and draw a relatively diverse crowd.
+
+---
+
+In the same vein, it is possible to just find the artists that appear at the same festivals as a given artist. Calling `find_coappearing_artists('Hiraes')` gives:
+
+```text
+[('Destruction', 0.065),
+ ('Benediction', 0.061),
+ ('Gloryhammer', 0.056),
+ ('Phil Campbell & The Bastard Sons', 0.048),
+ ('Gutalax', 0.038),
+ ('Finntroll', 0.038),
+ ('Feuerschwanz', 0.038),
+ ('Kanonenfieber', 0.038),
+ ('Lacuna Coil', 0.037),
+ ('Rotting Christ', 0.035)
 ...
+```
 
-The result can be used by artists to find a good festival to aim to perform at.
+Which shows the artist and their Jaccard similarity score to _Hiraes_ based on the festivals they made a co-appearence at, which seems correct, looking at their festival history.
 
 ---
 
