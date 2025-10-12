@@ -1,13 +1,5 @@
 # %% HEADER
-# Scrape concerts from concerts-metal.com. This is done in three steps:
-# 1) Get a list of similar artists to the one of interest on Last.fm
-# 2) Get the listener count for each similar artist on Last.fm
-# 3) Get the concerts on concerts-metal.com for the top X similar artists by listener count
-# The results are saved to a csv file
-# TODO: Header
-# TODO: Note somewhere that concerts-metal.com does not list all artists, but is a convenient source
-# TODO: Use association rules to find pairs of artists that are similar
-
+# Scrape concerts from concerts-metal.com.
 
 # %% IMPORTS
 # Set paths
