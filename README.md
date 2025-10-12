@@ -263,8 +263,6 @@ Visualise [concerts-metal.com](https://en.concerts-metal.com/) data to get an id
 
 This gives an idea of when bands start a new tour in a specific part of the world over the last 10 years. Though most of the activity seems to be in Europe and the US, it looks like the first date of a tour is pretty much all over the place, with the visually recognisable exception of the festival season (May-ish to August), where not many tours start.
 
----
-
 ## Contributing
 
 This is a project to showcase some of my skills in data analysis, so contributions cannot be accepted, but feel free to fork and ask questions.
