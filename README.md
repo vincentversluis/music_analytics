@@ -1,6 +1,6 @@
 # Music analytics
 
-Some analytics related to music.
+Some analytics related to music, in particular on data related to artists themselves, but not really their songs.
 
 This is mostly me playing around with data pertaining to something I really enjoy (my personal taste of music, metal of course 🤘) to build up a small portfolio of projects. My main personal learning goals with this portfolio is are to
 
