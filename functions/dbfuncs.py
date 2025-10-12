@@ -6,14 +6,21 @@ import base64
 from collections.abc import Callable
 import functools
 import json
+import os
 import sqlite3
 from typing import Any
 import xml.etree.ElementTree as ET
 
 import requests
 
-from config import DB_PATH
-
+# %% CONSTANTS
+# Compute the absolute path to the database file
+DB_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)),  # goes up from 'functions' to 'music_analytics'
+    "data",
+    "databases",
+    "requests_cache.db"
+)
 
 # %% FUNCTIONS
 def _detect_format(content_type: str | None) -> str:

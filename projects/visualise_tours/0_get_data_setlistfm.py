@@ -2,14 +2,6 @@
 # Get data from Setlist.fm and save to csv
 
 # %% IMPORTS
-# Set paths
-from pathlib import Path
-import sys
-
-# Add the project root to sys.path
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-sys.path.append(str(PROJECT_ROOT))
-
 import json
 from math import ceil
 

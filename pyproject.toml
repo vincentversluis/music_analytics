@@ -1,7 +1,14 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "music_analytics"
 version = "0.0.1"
 description = "A collection of scripts for analysing music data"
+
+[tool.setuptools.packages.find]
+where = ["."]
 
 [tool.ruff]
 line-length = 88
@@ -18,7 +25,7 @@ docstring-code-format = true
 docstring-code-line-length = 88
 
 [tool.ruff.lint.isort]
-known-first-party = ["your_package_name"]
+known-first-party = ["functions"]
 combine-as-imports = true
 force-sort-within-sections = true
 
