@@ -12,17 +12,8 @@
 # Depending on the number of artists, labels might get crammed and overlap, so you
 # might want to adjust the size of the plot and the number of artists to visualise
 # manually.
-#
 
 # %% IMPORTS
-# Set paths
-from pathlib import Path
-import sys
-
-# Add the project root to sys.path
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-sys.path.append(str(PROJECT_ROOT))
-
 from adjustText import adjust_text
 from matplotlib import ticker
 import matplotlib.pyplot as plt

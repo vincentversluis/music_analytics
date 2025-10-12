@@ -3,14 +3,6 @@
 # modelling is used, just some simple metrics and visualisation.
 
 # %% IMPORTS
-# Set paths
-from pathlib import Path
-import sys
-
-# Add the project root to sys.path
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-sys.path.append(str(PROJECT_ROOT))
-
 import pandas as pd
 from tqdm import tqdm
 
@@ -71,6 +63,7 @@ for genre in genres:
             "spotify_popularity": spotify_popularity,
         })
 
+# %% SAVE DATA
 # Save to csv for later use
 pd.DataFrame(artists).to_csv("../../data/artists_platform_popularity.csv", index=False)
 
