@@ -193,7 +193,7 @@ for i, col in enumerate(emotion_columns):
     # Axis styling
     match col:
         case "perspective":
-            ax.set_title("Perspective (use of $\it{we}$ (0.0) vs $\it{you}$ (1.0))")
+            ax.set_title("Perspective (use of $\it{we}$ (0.0) vs $\it{I}$ (1.0))")
         case "directness":
             ax.set_title("Directedness (use of $\it{you}$)")
         case "emotion_joy":
