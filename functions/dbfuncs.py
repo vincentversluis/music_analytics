@@ -16,11 +16,14 @@ import requests
 # %% CONSTANTS
 # Compute the absolute path to the database file
 DB_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(__file__)),  # goes up from 'functions' to 'music_analytics'
+    os.path.dirname(
+        os.path.dirname(__file__)
+    ),  # goes up from 'functions' to 'music_analytics'
     "data",
     "databases",
-    "requests_cache.db"
+    "requests_cache.db",
 )
+
 
 # %% FUNCTIONS
 def _detect_format(content_type: str | None) -> str:
