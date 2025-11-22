@@ -11,6 +11,14 @@
 /data/*
 !/data/databases/setup.py
 
+# Data files
+.xls
+.xlsx
+.pkl
+.pickle
+.csv
+.json
+
 # And keep the .keep file
 !*.keep
 
