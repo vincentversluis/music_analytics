@@ -54,6 +54,18 @@ All projects can be found in the [`projects`](projects) folder.
 
 ---
 
+### [`compare_genre_pushedness`](projects/compare_genre_pushedness/)
+
+Compare how much [Spotify](https://open.spotify.com/us/) artists are pushed on Spotify. Pushedness is defined as the number of monthly listeners divided by the number of followers and can be seen as a measure of how well an artist is suggested by the Spotify suggestion algorithm. The hypothesis is that easier to listen genres like power metal are pushed more. Investigating this for the top rated artists of several genres, as found on [Last.fm](https://www.last.fm/), removing outliers and keeping only artists with at least 10,000 monthly listeners, the output is a scatterplot like this:
+
+![Genre pushedness](assets/images/Compare_genre_pushedness.png)
+
+This illustrates that easier to listen to genres (and more currently popular genres) are indeed pushed somewhat more on Spotify than more _difficult to get_ genres. Interestingly the most listened to artists in the genres (such as _Metallica_ and _Bring Me The Horizon_) are not overly pushed. Amongst the lowest pushed artists are several well known bands in their genre (_Aggalloch_, _The Black Dahlia Murder_, _Sodom_), which leads to hypothesise that the algorithm does not necessarily help well known artists. 
+
+As a side note, Spotify does not provide an easy way to match an artist found on Last.fm, as it does not use a universal identifier such as MusicBrainzID (MBID). This means the artist has to be found by matching the name, which frequently results in incorrect matches. These have not been removed from the dataset, as it would be too time consuming to do so. Also scanning through which artists are associated with a specific genre, Last.fm seems to be not 100% reliable (_Ghost_ being called doom metal for example), possibly due to its crowdsourced nature.
+
+---
+
 ### [`compare_lyrics`](projects/compare_lyrics/)
 
 Compare the lyrics of songs by some of my current ~100 favourite artists, to investigate what characterises an artist's lyrics and which artists are lyrically close to each other. This uses data from [Genius](https://genius.com/) and results in several plots showing the top and bottom scoring artists for each metric, along with the distribution per metric. To create this I did remove some data points, such as non-English lyrics, so check out the [coding](projects/compare_lyrics/) for particulars.
