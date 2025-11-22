@@ -163,7 +163,7 @@ def get_artist_albums(artist_name: str, **kwargs) -> list:
     return albums
 
 
-def get_genre_artists(genre: str, n_artists: int = 25, **kwargs) -> list:
+def get_mb_genre_artists(genre: str, n_artists: int = 25, **kwargs) -> list:
     """Get artists from a genre from MusicBrainz.
 
     Args:
@@ -182,6 +182,31 @@ def get_genre_artists(genre: str, n_artists: int = 25, **kwargs) -> list:
     artists = [
         {"name": artist["name"], "mbid": artist["id"]} for artist in resp["artists"]
     ]
+    return artists
+
+
+def get_lastfm_genre_artists(genre: str, lastfm_api_key: str, n_artists: int = 50, **kwargs) -> dict:
+    """Get the top artists for a genre from Last.fm.
+
+    Args:
+        genre (str): The genre to get artists for.
+        lastfm_api_key (str): Your Last.fm API key.
+        n_artists (int, optional): The number of artists to get. Defaults to 50.
+
+    Returns:
+        dict: The artists with some details.
+    """
+    q = f"{LASTFM_ROOT}?method=tag.gettopartists&tag={genre}&limit={n_artists}&api_key={lastfm_api_key}&format=json"
+    resp = fetch(q, **kwargs)
+    artists = {
+    artist['name']: {
+        'rank': int(artist['@attr']['rank']),
+        'url': artist['url'],
+        'mbid': artist['mbid'],
+    } 
+    for artist 
+    in resp['topartists']['artist'] 
+    if artist.get('mbid')}
     return artists
 
 
@@ -249,6 +274,59 @@ def get_spotify_artist(
         return artist_info[0]
     else:
         return None
+
+
+@cache
+def get_spotify_followers_and_listeners(artist_name: str, spotify_client_id: str, spotify_client_secret: str) -> dict:
+    """Get an artist's Spotify followers and listeners.
+    
+    This function uses the information on the artist's browser page, as the Spotify API does not provide
+    the number of listeners, although it does provide the number of followers.
+    
+    Note: Not all artists have a Spotify page, so this function returns None if that is the case.
+
+    Args:
+        artist_name (str): The name of the artist.
+        spotify_client_id (str): Your Spotify client ID.
+        spotify_client_secret (str): Your Spotify client secret.
+
+    Returns:
+        dict | None: The artist's Spotify followers and listeners.
+    """    
+    # Get artist's Spotify id
+    artist_spotify_info = get_spotify_artist(artist_name=artist_name, spotify_client_id=spotify_client_id, spotify_client_secret=spotify_client_secret)
+    # Not all artists have a Spotify page
+    if not artist_spotify_info:
+        return None
+    artist_spotify_id = artist_spotify_info['id']
+    
+    # Get artist's Spotify browser page
+    url = f"https://open.spotify.com/artist/{artist_spotify_id}"
+    resp = requests.get(url)
+    sleep(1.5)  # Sleep to avoid hammering the server
+    
+    # Extract followers and listeners
+    soup = BeautifulSoup(resp.text, "html.parser")
+    
+    followers_tag = soup.find("p", {
+        "class": "e-91000-text encore-text-title-medium encore-internal-color-text-base"
+    })
+    followers = int(followers_tag.string.replace(",", ""))
+    
+    # The number of listeners is USUALLY in this div
+    try:
+        listeners_tags = soup.find_all("div", class_="encore-text-body-medium-bold")
+        listeners = [int(tag.get_text().split(' ')[0].replace(",", "")) for tag in listeners_tags if "monthly listeners" in tag.get_text()][0]
+    # Otherwise in this one
+    except IndexError:
+        listeners_tags = soup.find_all("div", {"data-testid": "monthly-listeners-label"})
+        listeners = [int(tag.get_text().split(' ')[0].replace(",", "")) for tag in listeners_tags if "monthly listeners" in tag.get_text()][0]
+        
+    artist_spotify_listeners_and_followers = {
+        'listeners_spotify': listeners,
+        'followers_spotify': followers
+    }
+    return artist_spotify_listeners_and_followers
 
 
 @cache
@@ -333,3 +411,8 @@ def get_genius_lyrics(url: str, **kwargs) -> list:
     ]).split("\n")
 
     return raw_lyrics
+
+# %%
+
+
+# %%
