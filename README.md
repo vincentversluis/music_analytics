@@ -60,7 +60,7 @@ Compare how much [Spotify](https://open.spotify.com/us/) artists are pushed on S
 
 ![Genre pushedness](assets/images/Compare_genre_pushedness.png)
 
-This illustrates that easier to listen to genres (and more currently popular genres) are indeed pushed somewhat more on Spotify than more _difficult to get_ genres. Interestingly the most listened to artists in the genres (such as _Metallica_ and _Bring Me The Horizon_) are not overly pushed. Amongst the lowest pushed artists are several well known bands in their genre (_Aggalloch_, _The Black Dahlia Murder_, _Sodom_), which leads to hypothesise that the algorithm does not necessarily help well known artists. 
+This illustrates that easier to listen to genres (and more currently popular genres) are indeed pushed somewhat more on Spotify than more _difficult to get_ genres. Interestingly the most listened to artists in the genres (such as _Metallica_ and _Bring Me The Horizon_) are not overly pushed. Amongst the lowest pushed artists are several well known bands in their genre (_Aggalloch_, _The Black Dahlia Murder_, _Sodom_), which leads to hypothesise that the algorithm does not necessarily help well known artists.
 
 As a side note, Spotify does not provide an easy way to match an artist found on Last.fm, as it does not use a universal identifier such as MusicBrainzID (MBID). This means the artist has to be found by matching the name, which frequently results in incorrect matches. These have not been removed from the dataset, as it would be too time consuming to do so. Also scanning through which artists are associated with a specific genre, Last.fm seems to be not 100% reliable (_Ghost_ being called doom metal for example), possibly due to its crowdsourced nature.
 

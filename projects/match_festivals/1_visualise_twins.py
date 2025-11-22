@@ -1,5 +1,5 @@
 # %% HEADER
-# Visualis the twinning of bands at festivals
+# Visualise the twinning of bands at festivals
 
 # %% IMPORTS
 from collections import Counter, defaultdict

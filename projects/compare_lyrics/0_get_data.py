@@ -1,4 +1,5 @@
 # %% HEADER
+# The aim of this script is to collect data to investigate whether a genre is more popular
 
 # %% IMPORTS
 from langdetect import DetectorFactory, detect

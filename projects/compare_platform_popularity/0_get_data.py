@@ -1,6 +1,5 @@
 # %% HEADING
-# The aim of this script is to predict when a band will release a new album. No fancy
-# modelling is used, just some simple metrics and visualisation.
+# The aim of this script is to collect data to investigate whether a genre is more popular
 
 # %% IMPORTS
 import pandas as pd

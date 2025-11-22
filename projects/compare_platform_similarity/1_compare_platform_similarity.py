@@ -1,6 +1,5 @@
 # %% HEADING
-# The aim of this script is to predict when a band will release a new album. No fancy
-# modelling is used, just some simple metrics and visualisation.
+# The aim of this script is to visualise the similarity of artists on Last.fm.
 
 # %% IMPORTS
 from matplotlib.lines import Line2D
