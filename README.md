@@ -54,6 +54,18 @@ All projects can be found in the [`projects`](projects) folder.
 
 ---
 
+### [`compare_artist_followers_listeners`](projects/compare_artist_followers_listeners/)
+
+Compare the number of [Spotify](https://open.spotify.com/us/) followers and listeners of artists performing at 70K tons of metal. This results in a scatterplot like this:
+
+![Artist followers vs listeners](assets/images/Artists_70K_listeners_followers.png)
+
+This shows that the festival (at the time of writing) has invited artists of varying popularity. The most popular artist (_Anthrax_) has a large following, though as there is a sizeable gap between their following and the next most popular artist (_Eluveitie_), this might leave room for yet another quite popular artist to be invited.
+
+Other than allowing for just seeing the popularity of the artists, this might also give an idea of at which stage specific artists might be performing at, and at what time they might be performing.
+
+---
+
 ### [`compare_genre_pushedness`](projects/compare_genre_pushedness/)
 
 Compare how much [Spotify](https://open.spotify.com/us/) artists are pushed on Spotify. Pushedness is defined as the number of monthly listeners divided by the number of followers and can be seen as a measure of how well an artist is suggested by the Spotify suggestion algorithm. The hypothesis is that easier to listen genres like power metal are pushed more. Investigating this for the top rated artists of several genres, as found on [Last.fm](https://www.last.fm/), removing outliers and keeping only artists with at least 10,000 monthly listeners, the output is a scatterplot like this:
