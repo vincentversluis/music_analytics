@@ -56,11 +56,13 @@ All projects can be found in the [`projects`](projects) folder.
 
 ### [`compare_artist_followers_listeners`](projects/compare_artist_followers_listeners/)
 
-Compare the number of [Spotify](https://open.spotify.com/us/) followers and listeners of artists performing at 70K tons of metal. This results in a scatterplot like this:
+Compare the number of [Spotify](https://open.spotify.com/us/) followers and listeners of artists performing at 70K tons of metal. This results in a scatterplot like this for the 2025 and 2026 editions:
 
-![Artist followers vs listeners](assets/images/Artists_70K_listeners_followers.png)
+![Artist followers vs listeners 70k 2025](assets/images/Compare_artists_listeners_followers_70k_2025.png)
 
-This shows that the festival (at the time of writing) has invited artists of varying popularity. The most popular artist (_Anthrax_) has a large following, though as there is a sizeable gap between their following and the next most popular artist (_Eluveitie_), this might leave room for yet another quite popular artist to be invited.
+![Artist followers vs listeners 70k 2026](assets/images/Compare_artists_listeners_followers_70k_2026.png)
+
+This shows that the 2026 edition of the festival (at the time of writing) has invited artists of varying popularity. The most popular artist (_Anthrax_) has a large following, though as there is a sizeable gap between their following and the next most popular artist (_Eluveitie_), this might leave room for yet another quite popular artist to be invited. This would be in line with the popularity profile of the bands that were invited to the 2025 edition. Likewise there is plenty of room for some more unknown artists to be invited, which is in line with the usual trend of 70K announcing lesser known bands in the last week befor the festival.
 
 Other than allowing for just seeing the popularity of the artists, this might also give an idea of at which stage specific artists might be performing at, and at what time they might be performing.
 

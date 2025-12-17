@@ -12,7 +12,7 @@ import seaborn as sns
 
 # %% GET DATA
 # Load from csv to avoid time-consuming API calls
-df = pd.read_csv("../../data/artists_70K_followers_listeners.csv", sep=";")
+df = pd.read_csv("../../data/artists_70K_2025_followers_listeners.csv", sep=";")
 
 # %% VISUALISE
 # Guarantee safety for log scales
@@ -79,7 +79,7 @@ adjust_text(
 )
 
 # Titles and labels
-plt.title("Spotify listeners vs followers of artists performing at 70000 tons of metal")
+plt.title("Spotify listeners vs followers of artists performing at 70000 tons of metal 2025")
 plt.xlabel("Listeners (log scale)")
 plt.ylabel("Followers (log scale)")
 
