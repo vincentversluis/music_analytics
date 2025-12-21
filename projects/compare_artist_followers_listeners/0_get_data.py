@@ -12,6 +12,7 @@ from functions.scraping import (
 )
 
 # %% INPUTS
+year = 2025
 scrapes_before_vpn_switch = 10  # How many scrapes before switching VPN endpoint
 
 # %% CONFIGS
@@ -26,7 +27,7 @@ with open(spotify_client_secret_path, encoding="utf-8") as f:
 
 # %% GET DATA
 # Get bands from csv (or any other source)
-bands_path = "../../data/artists_70K_2025.csv"
+bands_path = f"../../data/artists_70K_{year}.csv"
 artists_df = pd.read_csv(bands_path, delimiter=";")
 artists = {artist: {'artist': artist.title()} for artist in artists_df["Band"].to_list()}
 
@@ -49,12 +50,6 @@ for _, artist in tqdm(artists.items(), desc="Getting Spotify followers and liste
 
 # %% SAVE DATA
 # Create a csv file for manual alteration and later use
-pd.DataFrame(artists.values()).to_csv("../../data/artists_70K_2025_followers_listeners.csv", index=False)
+pd.DataFrame(artists.values()).to_csv(f"../../data/artists_70K_{year}_followers_listeners.csv", index=False)
 
-# %%
-artist
-# %%
-get_spotify_followers_and_listeners(
-        artist["artist"], spotify_client_id, spotify_client_secret
-    )
 # %%
