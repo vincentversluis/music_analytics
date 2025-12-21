@@ -11,7 +11,7 @@ import pandas as pd
 import seaborn as sns
 
 # %% INPUTS
-year = 2025
+year = 2026
 
 # %% GET DATA
 # Load from csv to avoid time-consuming API calls
@@ -92,7 +92,7 @@ adjust_text(
 )
 
 # Titles and labels
-plt.title(f"Spotify listeners vs followers of artists performing at 70000 tons of metal {year}")
+plt.title(f"Spotify listeners vs. followers of artists performing at 70000 Tons of Metal {year}")
 plt.xlabel("Listeners (log scale)")
 plt.ylabel("Followers (log scale)")
 
@@ -102,9 +102,9 @@ ymin, ymax = ax.get_ylim()
 ax.set_xlim(left=100, right=xmax)
 ax.set_ylim(bottom=100, top=ymax)
 
-# Add legend for podium if column exists
+# Add legend for stage if column exists
 if "podium_largest" in df.columns:
-    ax.legend(title="Largest podium", bbox_to_anchor=(1.02, 1), loc="upper left")
+    ax.legend(title="Largest stage", loc="lower right")
 
 plt.tight_layout()
 plt.show()
