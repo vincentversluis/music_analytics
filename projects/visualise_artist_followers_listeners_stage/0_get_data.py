@@ -12,7 +12,7 @@ from functions.scraping import (
 )
 
 # %% INPUTS
-year = 2025
+year = 2026
 scrapes_before_vpn_switch = 10  # How many scrapes before switching VPN endpoint
 
 # %% CONFIGS
