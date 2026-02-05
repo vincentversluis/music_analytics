@@ -2,7 +2,6 @@
 # Visualise when tours start
 
 # %% IMPORTS
-import arrow
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -11,7 +10,7 @@ import pycountry_convert as pc
 # %% INPUTS
 artist_name = "Aephanemer"  # The artist to use as a reference
 min_tour_concerts = 6  # Minimum number of concerts to constitute a tour
-years_back = 10  # How many years back to look for concerts
+first_year = 2015  # How many years back to look for concerts
 
 # %% GET DATA
 df = pd.read_csv("../../data/concerts.csv")[["artist", "date", "event_name", "country"]]
@@ -52,7 +51,10 @@ df_agg = pd.merge(
 )
 
 # Only keep tours that started in the last so many years
-df_agg = df_agg[df_agg["first_concert"].dt.year >= arrow.now().year - years_back]
+df_agg = df_agg[df_agg["first_concert"].dt.year >= first_year]
+
+# Keep year as a reference for later
+df_agg["first_concert_year"] = df_agg["first_concert"].dt.year
 
 # Replace year for 2000 for easier plotting
 df_agg["first_concert"] = df_agg["first_concert"].apply(lambda x: x.replace(year=2000))
@@ -97,7 +99,9 @@ for date in month_starts:
 
 # Format y-axis
 plt.yticks(ticks=range(len(artists_sorted)), labels=artists_sorted)
-plt.title(f"Date of first concert in tour in last {years_back} years")
+
+first_year_in_set = df_agg['first_concert_year'].min()
+plt.title(f"Date of first concert in tour since {first_year_in_set}")
 plt.grid(False)
 
 # Add the legend to the plot
