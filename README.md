@@ -54,15 +54,15 @@ All projects can be found in the [`projects`](projects) folder.
 
 ---
 
-### [`compare_artist_followers_listeners`](projects/compare_artist_followers_listeners/)
+### [`visualise_artist_followers_listeners_stage`](projects/visualise_artist_followers_listeners_stage/)
 
-Compare the number of [Spotify](https://open.spotify.com/us/) followers and listeners of artists performing at 70K tons of metal and add the largest podium they perform at. This results in a scatterplot like this for the 2025 and 2026 (as released per 20 December 2025) editions:
+Compare the number of [Spotify](https://open.spotify.com/us/) followers and listeners of artists performing at 70K tons of metal and add the largest podium they perform at. This results in a scatterplot like this for the 2025 and 2026 editions (as per February 2026):
 
 ![Artists at 70K 2025 and 2026](assets/images/Compare_artists_70k_2025_2026.png)
 
-Comparing the profile of the artists, it looks like the 2026 edition has already invited its most popular artists and only some lesser known bands can be expected to be added to the lineup. This is not fully in line with the usual trend of 70K releasing a relatively big name in the last week before the festival.
+The profile of invited artists and their assigned stages seems fairly consistent between the two editions. Interestingly, some artists (Hiraes and Izegrim at the 2026 edition), have a relatively low following, but are still assigned the largest stages, albeit at the edges of the day.
 
-Besides showing what size bands can be expected to be added to the lineup, this also gives an idea of the largest podium the artists can be expected to perform at.
+As the artists' profiles between the two editions are fairly similar, this could serve as a reasonable tool to figure out which artists are too big to boat and if the headliner has already been announced.
 
 ---
 
