@@ -1,6 +1,6 @@
 """The aim of this script is to make a visualisation of followers of artists performing at 70K tons of metal.
 
-Also show the amount of listeners, to make this a two dimensionalplot and add some context.
+Add the largest stage each artist performed at to the plot to provide some context.
 """
 
 # %% IMPORTS
