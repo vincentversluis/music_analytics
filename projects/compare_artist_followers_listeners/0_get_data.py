@@ -29,7 +29,9 @@ with open(spotify_client_secret_path, encoding="utf-8") as f:
 # Get bands from csv (or any other source)
 bands_path = f"../../data/artists_70K_{year}.csv"
 artists_df = pd.read_csv(bands_path, delimiter=";")
-artists = {artist: {'artist': artist.title()} for artist in artists_df["Band"].to_list()}
+artists = {
+    artist: {"artist": artist.title()} for artist in artists_df["Band"].to_list()
+}
 
 # %%
 # Get Spotify followers and listeners for an artist
@@ -50,6 +52,8 @@ for _, artist in tqdm(artists.items(), desc="Getting Spotify followers and liste
 
 # %% SAVE DATA
 # Create a csv file for manual alteration and later use
-pd.DataFrame(artists.values()).to_csv(f"../../data/artists_70K_{year}_followers_listeners.csv", index=False)
+pd.DataFrame(artists.values()).to_csv(
+    f"../../data/artists_70K_{year}_followers_listeners.csv", index=False
+)
 
 # %%

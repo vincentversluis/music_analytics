@@ -19,10 +19,7 @@ df = pd.read_csv(f"../../data/artists_70K_{year}_abt.csv", sep=";")
 
 # %% VISUALISE
 # Safety for log scales (at least 1 listener and follower)
-df = df[
-    (df["listeners_spotify"] >= 1) &
-    (df["followers_spotify"] >= 1)
-]
+df = df[(df["listeners_spotify"] >= 1) & (df["followers_spotify"] >= 1)]
 
 sns.set(style="whitegrid")
 plt.figure(figsize=(12, 12))
@@ -36,7 +33,7 @@ if "podium_largest" in df.columns:
         hue="podium_largest",
         palette="tab10",
         s=30,
-        linewidth=0
+        linewidth=0,
     )
 else:
     ax = sns.scatterplot(
@@ -45,7 +42,7 @@ else:
         y="followers_spotify",
         color="black",
         s=30,
-        linewidth=0
+        linewidth=0,
     )
 
 # Axes
@@ -53,12 +50,8 @@ ax.set_xscale("log")
 ax.set_yscale("log")
 ax.xaxis.set_major_locator(ticker.LogLocator(base=10.0, numticks=10))
 ax.yaxis.set_major_locator(ticker.LogLocator(base=10.0, numticks=10))
-ax.xaxis.set_major_formatter(
-    ticker.FuncFormatter(lambda x, _: f"{int(x):,}")
-)
-ax.yaxis.set_major_formatter(
-    ticker.FuncFormatter(lambda y, _: f"{int(y):,}")
-)
+ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, _: f"{int(y):,}"))
 ax.grid(True, which="both", linestyle=":", linewidth=0.5)
 
 # Labels and possible clipping
@@ -92,7 +85,9 @@ adjust_text(
 )
 
 # Titles and labels
-plt.title(f"Spotify listeners vs. followers of artists performing at 70000 Tons of Metal {year}")
+plt.title(
+    f"Spotify listeners vs. followers of artists performing at 70000 Tons of Metal {year}"
+)
 plt.xlabel("Listeners (log scale)")
 plt.ylabel("Followers (log scale)")
 
