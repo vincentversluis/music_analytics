@@ -155,6 +155,7 @@ for artist in tqdm(artists, desc="Getting concerts"):
 # Close browser
 driver.quit()
 
+# %% SAVE
 # Save to csv for later use
 pd.DataFrame(concerts).to_csv("../../data/concerts.csv", index=False)
 # %%
