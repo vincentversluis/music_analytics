@@ -180,20 +180,3 @@ driver.quit()
 pd.DataFrame(concerts).to_csv("../../data/concerts_2026.csv", index=False)
 
 # %%
-import sys
-import subprocess
-
-# Force install specifically to the interpreter your notebook is currently using
-subprocess.check_call([sys.executable, "-m", "pip", "install", "selenium-stealth"])
-
-# This refreshes the internal path cache so you don't have to restart
-import site
-from importlib import reload
-
-reload(site)
-
-import selenium_stealth
-
-print("Success! Stealth is located at:", selenium_stealth.__file__)
-
-# %%
