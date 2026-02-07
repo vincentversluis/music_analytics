@@ -13,12 +13,11 @@ import re
 from time import sleep
 
 import pandas as pd
-from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
-import undetected_chromedriver as uc
 from selenium_stealth import stealth
 from tqdm import tqdm
+import undetected_chromedriver as uc
 
 from functions.scraping import get_lastfm_listener_count, get_similar_artists
 
@@ -78,7 +77,8 @@ artists.append(artist_name)  # Add the artist of interest as a reference
 # Start browser in stealth mode
 options = uc.ChromeOptions()
 driver = uc.Chrome(options=options, version_main=144)
-stealth(driver,
+stealth(
+    driver,
     languages=["en-US", "en"],
     vendor="Google Inc.",
     platform="Win32",
@@ -87,7 +87,9 @@ stealth(driver,
     fix_hairline=True,
 )
 # Open the concerts-metal.com website to manually accept the Cloudflare challenge
-print("Opening concerts-metal.com. Manually complete the Cloudflare challenge before continuing.")
+print(
+    "Opening concerts-metal.com. Manually complete the Cloudflare challenge before continuing."
+)
 driver.get("https://en.concerts-metal.com/bands.html")
 
 # %%
@@ -175,7 +177,8 @@ driver.quit()
 
 # %% SAVE
 # Save to csv for later use
-pd.DataFrame(concerts).to_csv("../../data/concerts.csv", index=False)
+pd.DataFrame(concerts).to_csv("../../data/concerts_2026.csv", index=False)
+
 # %%
 import sys
 import subprocess
@@ -186,9 +189,11 @@ subprocess.check_call([sys.executable, "-m", "pip", "install", "selenium-stealth
 # This refreshes the internal path cache so you don't have to restart
 import site
 from importlib import reload
+
 reload(site)
 
 import selenium_stealth
+
 print("Success! Stealth is located at:", selenium_stealth.__file__)
 
 # %%

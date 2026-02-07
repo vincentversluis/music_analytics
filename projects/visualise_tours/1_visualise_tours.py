@@ -13,7 +13,9 @@ min_tour_concerts = 6  # Minimum number of concerts to constitute a tour
 first_year = 2015  # How many years back to look for concerts
 
 # %% GET DATA
-df = pd.read_csv("../../data/concerts.csv")[["artist", "date", "event_name", "country"]]
+df = pd.read_csv("../../data/concerts_2026.csv")[
+    ["artist", "date", "event_name", "country"]
+]
 
 # Cast types, add continent and sort
 df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y")
@@ -100,7 +102,7 @@ for date in month_starts:
 # Format y-axis
 plt.yticks(ticks=range(len(artists_sorted)), labels=artists_sorted)
 
-first_year_in_set = df_agg['first_concert_year'].min()
+first_year_in_set = df_agg["first_concert_year"].min()
 plt.title(f"Date of first concert in tour since {first_year_in_set}")
 plt.grid(False)
 
