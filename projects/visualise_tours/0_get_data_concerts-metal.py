@@ -5,6 +5,9 @@
 # 3) Get the concerts on concerts-metal.com for the top X similar artists by listener count
 # The results are saved to a csv file
 
+# ! This requires a small manual interaction, as concerts-metal.com does not like automation.abs
+# ! On opening the automated browser, just manually go through the Cloudflare challenge, then continue the script
+
 # %% IMPORTS
 import re
 from time import sleep
@@ -13,6 +16,8 @@ import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
+import undetected_chromedriver as uc
+from selenium_stealth import stealth
 from tqdm import tqdm
 
 from functions.scraping import get_lastfm_listener_count, get_similar_artists
@@ -70,9 +75,22 @@ similar_artists.sort(key=lambda x: x["listener_count"], reverse=True)
 artists = [artist["name"] for artist in similar_artists[:artists_listener_top_n]]
 artists.append(artist_name)  # Add the artist of interest as a reference
 
-# Start browser
-driver = webdriver.Chrome()
+# Start browser in stealth mode
+options = uc.ChromeOptions()
+driver = uc.Chrome(options=options, version_main=144)
+stealth(driver,
+    languages=["en-US", "en"],
+    vendor="Google Inc.",
+    platform="Win32",
+    webgl_vendor="Intel Inc.",
+    renderer="Intel Iris OpenGL Engine",
+    fix_hairline=True,
+)
+# Open the concerts-metal.com website to manually accept the Cloudflare challenge
+print("Opening concerts-metal.com. Manually complete the Cloudflare challenge before continuing.")
+driver.get("https://en.concerts-metal.com/bands.html")
 
+# %%
 concerts = []
 for artist in tqdm(artists, desc="Getting concerts"):
     # Go to search page and search for the artist
@@ -158,4 +176,19 @@ driver.quit()
 # %% SAVE
 # Save to csv for later use
 pd.DataFrame(concerts).to_csv("../../data/concerts.csv", index=False)
+# %%
+import sys
+import subprocess
+
+# Force install specifically to the interpreter your notebook is currently using
+subprocess.check_call([sys.executable, "-m", "pip", "install", "selenium-stealth"])
+
+# This refreshes the internal path cache so you don't have to restart
+import site
+from importlib import reload
+reload(site)
+
+import selenium_stealth
+print("Success! Stealth is located at:", selenium_stealth.__file__)
+
 # %%
