@@ -19,8 +19,8 @@ year = 2026
 # %% FUNCTIONS
 def time_to_continuous(t: datetime.time) -> float:
     """Convert time to continuous hour scale.
-    
-    Starting at 10.0 for 10:00, counting through 00:00, so that 00:00 is 24.0, 
+
+    Starting at 10.0 for 10:00, counting through 00:00, so that 00:00 is 24.0,
     01:30 is 25.5, etc.
 
     Args:
@@ -28,7 +28,7 @@ def time_to_continuous(t: datetime.time) -> float:
 
     Returns:
         float: The converted time in a continuous hour scale.
-    """    
+    """
     h = t.hour + t.minute / 60
     return h if h >= 10 else h + 24  # after midnight → next day
 
@@ -80,10 +80,7 @@ ax.grid(True, which="both", linestyle=":", linewidth=0.5)
 
 # Custom ticks from 10:00 to 05:00 next day
 xticks = [h for h in range(10, 31)]  # 10 → 30
-xtick_labels = [
-    f"{h:02d}:00" if h < 24 else f"{h-24:02d}:00"
-    for h in xticks
-]
+xtick_labels = [f"{h:02d}:00" if h < 24 else f"{h - 24:02d}:00" for h in xticks]
 ax.set_xticks(xticks)
 ax.set_xticklabels(xtick_labels, rotation=45)
 
@@ -110,7 +107,7 @@ adjust_text(
     force_text=0.6,
     force_points=0.4,
     only_move={"points": "y", "text": "y"},
-    autoalign='y',
+    autoalign="y",
     arrowprops=dict(arrowstyle="-", color="gray", lw=0.5),
     lim=300,
     precision=0.02,
