@@ -54,15 +54,23 @@ All projects can be found in the [`projects`](projects) folder.
 
 ---
 
-### [`visualise_artist_followers_listeners_stage`](projects/visualise_artist_followers_listeners_stage/)
+### [`visualise_artist_at_festival`](projects/visualise_artist_at_festival/)
 
-Compare the number of [Spotify](https://open.spotify.com/us/) followers and listeners of artists performing at 70K tons of metal and add the largest podium they perform at. This results in a scatterplot like this for the 2025 and 2026 editions (as per February 2026):
+Compare the number of [Spotify](https://open.spotify.com/us/) followers and listeners of artists performing at 70K tons of metal and get some insight into at which stage they play at. This results in a scatterplot like this for the 2025 and 2026 editions (as per February 2026):
 
 ![Artists at 70K 2025 and 2026](assets/images/Compare_artists_70k_2025_2026.png)
 
 The profile of invited artists and their assigned stages seems fairly consistent between the two editions. Interestingly, some artists (Hiraes and Izegrim at the 2026 edition), have a relatively low following, but are still assigned the largest stages, albeit at the edges of the day.
 
 As the artists' profiles between the two editions are fairly similar, this could serve as a reasonable tool to figure out which artists are too big to boat and if the headliner has already been announced.
+
+---
+
+Taking the times the artists performed at into account, this results in:
+
+![Performance times at 70k 2026](assets/images/Compare_artists_followers_stage_time_70k_2026.png)
+
+This gives a bit of an idea of which artists are headliners and when they perform at the big stage. The artists with the largest following definitely get the largest stage, *Anthrax* and *Eluveitie* get the best times. It looks like *Xandria* got a bit shafted with a pretty large following, but a 10:00 slot, comparable with *Vader* at 03:30. *Harakiri for the Sky* got slightly shafted, as they have a large following, but did not get the biggest stage or the best time slot. *Hiraes* and *Izegrim* were blessed to play the big stage, but did so at the edges of the day.
 
 ---
 

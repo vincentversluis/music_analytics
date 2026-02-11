@@ -17,10 +17,11 @@ year = 2026
 # Load from csv to avoid time-consuming API calls
 df = pd.read_csv(f"../../data/artists_70K_{year}_abt.csv", sep=";")
 
-# %% VISUALISE
+# %% PREP DATA
 # Safety for log scales (at least 1 listener and follower)
 df = df[(df["listeners_spotify"] >= 1) & (df["followers_spotify"] >= 1)]
 
+# %% VISUALISE
 sns.set(style="whitegrid")
 plt.figure(figsize=(12, 12))
 
